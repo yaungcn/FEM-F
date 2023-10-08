@@ -1,0 +1,11 @@
+[Oct  8 2023 17:45:41][main_log] [1m[32m<info>[0m[0m Program Starts
+   1.0000000000000000        2.0000000000000000        2.0000000000000000        3.0000000000000000        3.0000000000000000        4.0000000000000000        4.0000000000000000        5.0000000000000000     
+[Oct  8 2023 17:45:41][main_log] [1m[32m<info>[0m[0m Program Ends
+[  0%]                       main.f90
+[ 50%]                       main.f90  done.
+[ 50%]                       FEsolver
+[100%]                       FEsolver  done.
+[100%] Project compiled successfully.
+[Oct  8 2023 17:46:28][main_log] [1m[32m<info>[0m[0m Program Starts
+   2.0000000000000000     
+[Oct  8 2023 17:46:28][main_log] [1m[32m<info>[0m[0m Program Ends
