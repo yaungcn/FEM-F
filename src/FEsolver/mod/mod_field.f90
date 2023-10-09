@@ -4,13 +4,14 @@ module mod_field
 
    private
    public :: field
-   
+
    type :: field
       !! Field parameter input.
       real(wp) :: left, right
          !! The problem domain is [left,right]*[bottom,top].
       real(wp) :: h_partition
          !! The step size of the partition.
+      real(wp) :: tolerance = 10000*epsilon(1.0_wp)
       integer :: Gauss_point_number
          !! The number of Gauss Quadrature points.
       integer :: basis_type = 101

@@ -6,7 +6,8 @@ module mod_generate
    public :: generate_info_matrix, generate_boundarynodes
 contains
    subroutine generate_info_matrix(M, T, field_info)
-      real(wp), allocatable, intent(inout) :: M(:, :), T(:, :)
+      real(wp), allocatable, intent(inout) :: M(:, :)
+      integer, allocatable, intent(inout) :: T(:, :)
       type(field), intent(in) :: field_info
       integer :: N, index
 

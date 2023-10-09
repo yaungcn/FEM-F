@@ -13,7 +13,7 @@ program main
          !! The problem domain is [left,right]*[bottom,top].
    real(wp) :: h_partition = 1.0_wp/4.0_wp
          !! The step size of the partition.
-   integer :: Gauss_point_number = 4
+   integer :: Gauss_point_number = 6
          !! The number of Gauss Quadrature points.
    !> basis_type: the type of the FE.
    integer :: basis_type = 101
@@ -28,9 +28,9 @@ program main
    !> -In 1D, M has only one row.
    !> T stores the global indices of the nodes od every element for the type of FE specified by "basis_type".
    !> -T(i,j) stores the global index of the ith node in jth element.
-   real(wp), allocatable :: M_basis(:, :), T_basis(:, :)
+   real(wp), allocatable, target :: M_basis(:, :), M_partition(:, :)
       !! FE nodes information matrix
-   real(wp), allocatable :: M_partition(:, :), T_partition(:, :)
+   integer, allocatable :: T_basis(:, :), T_partition(:, :)
       !! Mesh nodes information matrix
 
    !> FE & Mesh setting.
@@ -44,14 +44,15 @@ program main
 
    real(wp), allocatable :: A(:, :), b(:, :)
    real(wp), allocatable :: solution(:, :)
-   
+
    type(func_a) :: cofunc_a
    type(func_f) :: cofunc_f
    type(func_g) :: cofunc_g
-   type(local_basis_1D) :: basis_1D
-   type(quad_1D) :: gauss_1D
 
-   ! integer :: index_i, index_j
+   integer :: trial_basis_type = 101, trial_derivate_degree = 1
+   integer :: test_basis_type = 101, test_derivate_degree = 1
+
+   integer :: index
 
    !> flogging
    call logger_init('./log/log.out')
@@ -88,17 +89,34 @@ program main
    b = 0
    solution = 0
 
-   ! call assemble_matirx_1D(A, cofunc_a, basis_1D, input_info)
+   call assemble_matirx_1D(A, cofunc_a, &
+                           M_partition, T_partition, &
+                           T_basis, T_basis, &
+                           num_of_elements, &
+                           num_of_trial_local_basis, num_of_test_local_basis, &
+                           trial_basis_type, trial_derivate_degree, &
+                           test_basis_type, test_derivate_degree, &
+                           input_info)
 
-   ! call assemble_vector_1D(b, input_info)
-
+   call assemble_vector_1D(b, cofunc_f, &
+                           M_partition, T_partition, &
+                           T_basis, num_of_elements, &
+                           num_of_test_local_basis, &
+                           test_basis_type, test_derivate_degree, &
+                           input_info)
+! 09 format('(5(f15.5),A,f15.5)')
+   print *, 'Assemble A & b'
+   do index = 1, N_basis + 1
+      write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
+   end do
    boundarynodes = generate_boundarynodes(N_basis)
       !! Generate boundary nodes
-   print *, A
    call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
 
-   print *, A
-
+   print *, 'Treated A & b'
+   do index = 1, N_basis + 1
+      write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
+   end do
    ! call solver(A, b, solution)
 
    call logger%info('main_log', 'Program Ends')
