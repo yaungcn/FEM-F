@@ -1,17 +1,18 @@
 module general_square_matrix_mod
    use square_matrix_mod
+   use quadrature_module, only: wp => quadrature_wp
    implicit none
    private
 
-   real(dp), dimension(:), allocatable :: real_work_array
+   real(wp), dimension(:), allocatable :: real_work_array
    integer, dimension(:), allocatable :: integer_work_array
 
    type, extends(square_matrix), public :: general_square_matrix
       private
-      real(dp), dimension(:, :), allocatable :: matrix
-      real(dp), dimension(:, :), allocatable :: factored_matrix
-      real(dp), dimension(:), allocatable :: col_scale_factors
-      real(dp), dimension(:), allocatable :: row_scale_factors
+      real(wp), dimension(:, :), allocatable :: matrix
+      real(wp), dimension(:, :), allocatable :: factored_matrix
+      real(wp), dimension(:), allocatable :: col_scale_factors
+      real(wp), dimension(:), allocatable :: row_scale_factors
       integer, dimension(:), allocatable :: pivots
       logical :: factored = .false.
       character :: equilibration = "N"
@@ -29,27 +30,27 @@ module general_square_matrix_mod
       pure subroutine dgesvx(fact, trans, n, nrhs, a, lda, af, ldaf, &
                              ipiv, equed, r, c, b, ldb, x, ldx, rcond, ferr, berr, work, &
                              iwork, info)
-         import dp
+         import wp
          character, intent(in) :: fact
          character, intent(in) :: trans
          integer, intent(in) :: n
          integer, intent(in) :: nrhs
-         real(dp), intent(inout), dimension(lda, n) :: a
+         real(wp), intent(inout), dimension(lda, n) :: a
          integer, intent(in) :: lda
-         real(dp), intent(inout), dimension(ldaf, n) :: af
+         real(wp), intent(inout), dimension(ldaf, n) :: af
          integer, intent(in) :: ldaf
          integer, intent(inout), dimension(n) :: ipiv
          character, intent(inout) :: equed
-         real(dp), intent(inout), dimension(n) :: r
-         real(dp), intent(inout), dimension(n) :: c
-         real(dp), intent(inout), dimension(ldb, nrhs) :: b
+         real(wp), intent(inout), dimension(n) :: r
+         real(wp), intent(inout), dimension(n) :: c
+         real(wp), intent(inout), dimension(ldb, nrhs) :: b
          integer, intent(in) :: ldb
-         real(dp), intent(out), dimension(ldx, nrhs) :: x
+         real(wp), intent(out), dimension(ldx, nrhs) :: x
          integer, intent(in) :: ldx
-         real(dp), intent(out) :: rcond
-         real(dp), intent(out), dimension(nrhs) :: ferr
-         real(dp), intent(out), dimension(nrhs) :: berr
-         real(dp), intent(out), dimension(4*n) :: work
+         real(wp), intent(out) :: rcond
+         real(wp), intent(out), dimension(nrhs) :: ferr
+         real(wp), intent(out), dimension(nrhs) :: berr
+         real(wp), intent(out), dimension(4*n) :: work
          integer, intent(out), dimension(n) :: iwork
          integer, intent(out) :: info
       end subroutine dgesvx
@@ -58,7 +59,7 @@ module general_square_matrix_mod
 contains
 
    function constructor(matrix) result(this)
-      real(dp), dimension(:, :), intent(in) :: matrix
+      real(wp), dimension(:, :), intent(in) :: matrix
       type(general_square_matrix) :: this
       integer :: n
       n = size(matrix, 1)
@@ -76,7 +77,7 @@ contains
 
    pure function get_matrix(this) result(matrix)
       class(general_square_matrix), intent(in) :: this
-      real(dp), dimension(this%get_size(), this%get_size()) :: matrix
+      real(wp), dimension(this%get_size(), this%get_size()) :: matrix
       integer :: i, j
       do concurrent(i=1:this%get_size(), j=1:this%get_size())
          matrix(i, j) = this%matrix(i, j)
@@ -95,13 +96,13 @@ contains
 
    function inv_mat_mult(this, rhs) result(solution)
       class(general_square_matrix), intent(inout) :: this
-      real(dp), dimension(:), intent(in) :: rhs
-      real(dp), dimension(size(rhs)) :: solution
+      real(wp), dimension(:), intent(in) :: rhs
+      real(wp), dimension(size(rhs)) :: solution
 
       integer :: n, info
-      real(dp), dimension(size(rhs), 1) :: x, b
-      real(dp), dimension(1) :: ferr, berr
-      real(dp) :: rcond
+      real(wp), dimension(size(rhs), 1) :: x, b
+      real(wp), dimension(1) :: ferr, berr
+      real(wp) :: rcond
       character :: fact
 
       n = size(rhs)

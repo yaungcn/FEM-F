@@ -52,7 +52,7 @@ program main
    integer :: trial_basis_type = 101, trial_derivate_degree = 1
    integer :: test_basis_type = 101, test_derivate_degree = 1
 
-   integer :: index
+   ! integer :: index
 
    !> flogging
    call logger_init('./log/log.out')
@@ -104,20 +104,27 @@ program main
                            num_of_test_local_basis, &
                            test_basis_type, test_derivate_degree, &
                            input_info)
+
 ! 09 format('(5(f15.5),A,f15.5)')
-   print *, 'Assemble A & b'
-   do index = 1, N_basis + 1
-      write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
-   end do
+   ! print *, 'Assemble A & b'
+   ! do index = 1, N_basis + 1
+   !    write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
+   ! end do
+
    boundarynodes = generate_boundarynodes(N_basis)
       !! Generate boundary nodes
    call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
 
-   print *, 'Treated A & b'
-   do index = 1, N_basis + 1
-      write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
-   end do
-   ! call solver(A, b, solution)
+   ! print *, 'Treated A & b'
+   ! do index = 1, N_basis + 1
+   !    write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
+   ! end do
+   call solver(A, b, solution)
+
+   ! print *, 'Solution:'
+   ! do index = 1, N_basis + 1
+   !    write (*, '(5(f15.5))') solution(index, 1)
+   ! end do
 
    call logger%info('main_log', 'Program Ends')
 

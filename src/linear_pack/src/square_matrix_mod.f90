@@ -1,4 +1,5 @@
 module square_matrix_mod
+   use quadrature_module, only: wp => quadrature_wp
    implicit none
    private
 
@@ -16,9 +17,9 @@ module square_matrix_mod
    abstract interface
       pure function getm(this) result(m)
          import square_matrix
-         import dp
+         import wp
          class(square_matrix), intent(in) :: this
-         real(dp), dimension(this%get_size(), this%get_size()) :: m
+         real(wp), dimension(this%get_size(), this%get_size()) :: m
       end function getm
 
       pure function gets(this) result(s)
@@ -31,10 +32,10 @@ module square_matrix_mod
          ! TODO: Consider returning a derived type with information on
          ! error, etc.
          import square_matrix
-         import dp
+         import wp
          class(square_matrix), intent(inout) :: this
-         real(dp), dimension(:), intent(in) :: rhs
-         real(dp), dimension(size(rhs)) :: solution
+         real(wp), dimension(:), intent(in) :: rhs
+         real(wp), dimension(size(rhs)) :: solution
       end function solve
    end interface
 
@@ -42,9 +43,9 @@ contains
 
    pure function mat_mult(this, rhs) result(product)
       class(square_matrix), intent(in) :: this
-      real(dp), dimension(:), intent(in) :: rhs
-      real(dp), dimension(size(rhs)) :: product
-      real(dp), allocatable, dimension(:, :) :: mat
+      real(wp), dimension(:), intent(in) :: rhs
+      real(wp), dimension(size(rhs)) :: product
+      real(wp), allocatable, dimension(:, :) :: mat
       if (this%get_size() /= size(rhs)) error stop "Matrix and array of different sizes"
       product = matmul(this%get_matrix(), rhs)
    end function mat_mult
