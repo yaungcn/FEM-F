@@ -4,8 +4,9 @@ module mod_field
 
    private
    public :: field
+   
    type :: field
-      !> Field parameter input.
+      !! Field parameter input.
       real(wp) :: left, right
          !! The problem domain is [left,right]*[bottom,top].
       real(wp) :: h_partition

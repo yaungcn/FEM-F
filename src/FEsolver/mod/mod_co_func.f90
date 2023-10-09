@@ -1,4 +1,4 @@
-module mod_func
+module mod_co_func
    use quadrature_module, only: wp => quadrature_wp
    implicit none
 
@@ -56,4 +56,4 @@ contains
          function_g = 1
       end select
    end function function_g
-end module mod_func
+end module mod_co_func

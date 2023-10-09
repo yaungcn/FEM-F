@@ -1,6 +1,6 @@
 module mod_treat_boundary
    use mod_field, only: field
-   use mod_func
+   use mod_co_func
    use quadrature_module, only: wp => quadrature_wp
    implicit none
    private

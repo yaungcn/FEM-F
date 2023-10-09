@@ -9,7 +9,7 @@ program main
    !> input information of field
    type(field) :: input_info
    !> Field parameter input.
-   real(wp) :: left = 0_wp, right = 1_wp
+   real(wp) :: left = 0.0_wp, right = 1.0_wp
          !! The problem domain is [left,right]*[bottom,top].
    real(wp) :: h_partition = 1.0_wp/4.0_wp
          !! The step size of the partition.
@@ -41,9 +41,15 @@ program main
    integer :: num_of_trial_local_basis, num_of_test_local_basis
 
    integer, allocatable :: boundarynodes(:, :)
-   type(func_g) :: functiong
+
    real(wp), allocatable :: A(:, :), b(:, :)
    real(wp), allocatable :: solution(:, :)
+   
+   type(func_a) :: cofunc_a
+   type(func_f) :: cofunc_f
+   type(func_g) :: cofunc_g
+   type(local_basis_1D) :: basis_1D
+   type(quad_1D) :: gauss_1D
 
    ! integer :: index_i, index_j
 
@@ -76,21 +82,27 @@ program main
       continue
    end select
 
+   !> Allocate memory to A, b and solution. Set to zero.
    allocate (A(N_basis + 1, N_basis + 1), b(N_basis + 1, 1), solution(N_basis + 1, 1))
    A = 0
    b = 0
    solution = 0
-   ! call assemble_matirx_1D(A, input_info)
+
+   ! call assemble_matirx_1D(A, cofunc_a, basis_1D, input_info)
 
    ! call assemble_vector_1D(b, input_info)
 
    boundarynodes = generate_boundarynodes(N_basis)
       !! Generate boundary nodes
    print *, A
-   call treat_Dirchlet_boundary(functiong, A, b, boundarynodes, M_basis)
+   call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
+
+   print *, A
 
    ! call solver(A, b, solution)
 
    call logger%info('main_log', 'Program Ends')
+
+   deallocate (A, b, solution)
 end program main
 
