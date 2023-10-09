@@ -53,7 +53,7 @@ contains
       case (0)
          function_g = 0
       case (1)
-         function_g = 1
+         function_g = cos(1.0_wp)
       end select
    end function function_g
 end module mod_co_func

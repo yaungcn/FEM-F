@@ -43,7 +43,7 @@ contains
 
       do index_n = 1, num_of_elements
          vertices(1) = M_partition(1, T_partition(1, index_n))
-         vertices(2) = M_partition(1, T_partition(2, 2))
+         vertices(2) = M_partition(1, T_partition(2, index_n))
 
          do index_trial = 1, num_of_trial_local_basis
             do index_test = 1, num_of_test_local_basis
@@ -92,7 +92,7 @@ contains
 
       do index_n = 1, num_of_elements
          vertices(1) = M_partition(1, T_partition(1, index_n))
-         vertices(2) = M_partition(1, T_partition(2, 2))
+         vertices(2) = M_partition(1, T_partition(2, index_n))
 
          do index_test = 1, num_of_test_local_basis
 

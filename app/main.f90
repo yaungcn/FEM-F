@@ -13,7 +13,7 @@ program main
          !! The problem domain is [left,right]*[bottom,top].
    real(wp) :: h_partition = 1.0_wp/4.0_wp
          !! The step size of the partition.
-   integer :: Gauss_point_number = 6
+   integer :: Gauss_point_number = 8
          !! The number of Gauss Quadrature points.
    !> basis_type: the type of the FE.
    integer :: basis_type = 101
@@ -50,9 +50,10 @@ program main
    type(func_g) :: cofunc_g
 
    integer :: trial_basis_type = 101, trial_derivate_degree = 1
-   integer :: test_basis_type = 101, test_derivate_degree = 1
+   integer :: test_basis_type = 101, test_derivate_degree = 1, b_test_derivate_degree = 0
 
-   ! integer :: index
+   integer :: index
+   real(wp) :: ans
 
    !> flogging
    call logger_init('./log/log.out')
@@ -102,7 +103,7 @@ program main
                            M_partition, T_partition, &
                            T_basis, num_of_elements, &
                            num_of_test_local_basis, &
-                           test_basis_type, test_derivate_degree, &
+                           test_basis_type, b_test_derivate_degree, &
                            input_info)
 
 ! 09 format('(5(f15.5),A,f15.5)')
@@ -115,16 +116,16 @@ program main
       !! Generate boundary nodes
    call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
 
-   ! print *, 'Treated A & b'
-   ! do index = 1, N_basis + 1
-   !    write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
-   ! end do
+   print *, 'Treated A & b'
+   do index = 1, N_basis + 1
+      write (*, '(5(f15.5),A,f15.5)') A(index, :), '  |', b(index, 1)
+   end do
    call solver(A, b, solution)
 
-   ! print *, 'Solution:'
-   ! do index = 1, N_basis + 1
-   !    write (*, '(5(f15.5))') solution(index, 1)
-   ! end do
+   print *, 'Solution:'
+   do index = 1, N_basis + 1
+      write (*, '(5(f15.5))') solution(index, 1)
+   end do
 
    call logger%info('main_log', 'Program Ends')
 
