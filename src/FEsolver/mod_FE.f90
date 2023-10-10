@@ -96,5 +96,6 @@ contains
       call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
 
       call solver(A, b, solution)
+      deallocate (A, b)
    end subroutine
 end module mod_FE
