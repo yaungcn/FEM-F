@@ -39,6 +39,8 @@ contains
    end subroutine init_1D
 
    function quad_A_1D(self, x) result(f)
+      !! TODO: used in assemble matrix A.
+      !! SUIT: 1D linear. Dirchlet boundary condition.
       class(integration_class_1d), intent(inout) :: self
       real(wp), intent(in) :: x
       real(wp) :: f
@@ -55,6 +57,8 @@ contains
    end function quad_A_1D
 
    function quad_b_1D(self, x) result(f)
+      !! TODO: used in assemble vector b.
+      !! SUIT: 1D linear. Dirchlet boundary condition.
       class(integration_class_1d), intent(inout) :: self
       real(wp), intent(in) :: x
       real(wp) :: f
@@ -68,4 +72,21 @@ contains
       end select
 
    end function quad_b_1D
+
+   function quad_solution_1D(self, x) result(f)
+      !! TODO: used to quadrature the solution function.
+      class(integration_class_1d), intent(inout) :: self
+      real(wp), intent(in) :: x
+      real(wp) :: f
+
+      select type (self)
+      class is (quad_1D)
+         f = self%co_func%func_pass(x)* &
+             self%basis_test%basis_f(x)
+      class default
+         error stop "Undefined Class"
+      end select
+
+   end function quad_solution_1D
+
 end module mod_gauss_quad

@@ -19,6 +19,7 @@ contains
    end function
 
    function exact_solution(x)
+      !! f(x) = x*cos(x)
       real(wp), intent(in) :: x
       real(wp) :: exact_solution
       exact_solution = x*cos(x)
