@@ -55,7 +55,7 @@ contains
       num_of_elements = N_partition
 
       select case (field_info%basis_type)
-      case (101)
+       case (101)
          N_basis = N_partition
 
          M_basis = M_partition
@@ -63,9 +63,9 @@ contains
 
          num_of_trial_local_basis = 2
          num_of_test_local_basis = 2
-      case (102)
+       case (102)
          continue
-      case default
+       case default
          continue
       end select
 
@@ -76,20 +76,20 @@ contains
       solution = 0
 
       call assemble_matirx_1D(A, cofunc_a, &
-                              M_partition, T_partition, &
-                              T_basis, T_basis, &
-                              num_of_elements, &
-                              num_of_trial_local_basis, num_of_test_local_basis, &
-                              trial_basis_type, trial_derivate_degree, &
-                              test_basis_type, test_derivate_degree, &
-                              field_info)
+         M_partition, T_partition, &
+         T_basis, T_basis, &
+         num_of_elements, &
+         num_of_trial_local_basis, num_of_test_local_basis, &
+         trial_basis_type, trial_derivate_degree, &
+         test_basis_type, test_derivate_degree, &
+         field_info)
 
       call assemble_vector_1D(b, cofunc_f, &
-                              M_partition, T_partition, &
-                              T_basis, num_of_elements, &
-                              num_of_test_local_basis, &
-                              test_basis_type, b_test_derivate_degree, &
-                              field_info)
+         M_partition, T_partition, &
+         T_basis, num_of_elements, &
+         num_of_test_local_basis, &
+         test_basis_type, b_test_derivate_degree, &
+         field_info)
 
       boundarynodes = generate_boundarynodes(N_basis)
       !! Generate boundary nodes

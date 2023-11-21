@@ -14,5 +14,5 @@ link = ["openblas"]
 library = false
 [fortran]
 implicit-typing = false
-implicit-external = false
+implicit-external = true # default is false
 source-form = "free"
