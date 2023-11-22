@@ -4,12 +4,14 @@
             {
                   "type": "shell",
                   "label": "Build-fpm",
-                  "command": "fpm", //use fpm to install 
+                  "command": "fpm", // Use fpm to install 
                   "args": [
                         "install",
-                        "-flag",
+                        "--profile", // [fpm install --help]
+                        "'debug'", // If --flag is not specified the "debug" flags are the default.
+                        "-flag", // To link 'lopenblas' lib file.
                         "'-L./lib'",
-                        "-prefix",
+                        "-prefix", // To locate the install path.
                         "'.'",
                         "-bindir",
                         "'bin'",

@@ -11,15 +11,15 @@ program main
 
    !> Field parameter input.
    real(wp) :: left = 0.0_wp, right = 1.0_wp
-         !! The problem domain is [left,right]*[bottom,top].
+   !! The problem domain is [left,right]*[bottom,top].
    real(wp) :: h_partition = 1.0_wp/4.0_wp
-         !! The step size of the partition.
+   !! The step size of the partition.
    integer :: Gauss_point_number = 8
-         !! The number of Gauss Quadrature points.
+   !! The number of Gauss Quadrature points.
    !> basis_type: the type of the FE.
    integer :: basis_type = 101
-      !! 101: 1D linear
-      !! 102: undefined
+   !! 101: 1D linear
+   !! 102: undefined
 
    real(wp), allocatable :: solution(:, :)
 
@@ -30,9 +30,9 @@ program main
 
    !> flogging
    call logger_init('./log/log.out')
-      !! Initialise the logger prior to use
+   !! Initialise the logger prior to use
    call logger%info('main_log', 'Program Starts')
-      !! log information
+   !! log information
    print *, "------------------------------------------"
 
    do index = 1, 8
