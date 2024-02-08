@@ -10,7 +10,7 @@ program example_FE_1D
 
    !> Field parameter input.
    real(wp) :: left = 0.0_wp, right = 1.0_wp
-   !! The problem domain is [left,right]*[bottom,top].
+   !! The problem domain is [left,right].
    real(wp) :: h_partition = 1.0_wp/4.0_wp
    !! The step size of the partition.
    integer :: Gauss_point_number = 8

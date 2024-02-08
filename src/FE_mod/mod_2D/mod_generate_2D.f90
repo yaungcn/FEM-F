@@ -7,21 +7,68 @@ module mod_generate_2D
 contains
    subroutine generate_info_matrix(M, T, field_info)
       real(wp), allocatable, intent(inout) :: M(:, :)
+      !! M(i, j): the coordinate of the j-th node in the field.
       integer, allocatable, intent(inout) :: T(:, :)
+      !! T(i, j): the index of the nodes of the elements.
       type(field), intent(in) :: field_info
-      integer :: N, index
+      integer :: index, index_col, index_row, N_nodes, N_elements
 
-      if (field_info%basis_type == 101) then
-         N = int((field_info%right - field_info%left)/field_info%h_partition)
-         allocate (M(1, N + 1), T(2, N))
+      if (field_info%mesh_type == 503) then
+         !! 503: triangular mesh information matrix.
+         N_nodes = (field_info%Nh + 1)*(field_info%Nv + 1)
+         N_elements = 2*field_info%Nh*field_info%Nv
+         allocate (M(2, N_nodes), T(3, N_elements))
 
-         do index = 1, N + 1
-            M(1, index) = field_info%left + (index - 1)*field_info%h_partition
+         do index_col = 1, field_info%Nh + 1
+            do index_row = 1, field_info%Nv + 1
+               !! index of the node in the field.
+               index = (index_col - 1)*(field_info%Nv + 1) + index_row
+               M(1, index) = field_info%left + (index_col - 1)*field_info%h_partition
+               M(2, index) = field_info%bottom + (index_row - 1)*field_info%v_partition
+            end do
          end do
 
-         do index = 1, N
-            T(1, index) = index
-            T(2, index) = index + 1
+         do index_col = 1, field_info%Nh
+            do index_row = 1, field_info%Nv
+               !! index of the element in the field.
+               index = 2*index_row + 2*(index_col - 1)*field_info%Nv
+               !! down triangle.
+               T(1, index - 1) = (field_info%Nv + 1)*(index_col - 1) + index_row
+               T(2, index - 1) = T(1, index - 1) + field_info%Nv + 1
+               T(3, index - 1) = T(1, index - 1) + 1
+               !! up triangle.
+               T(1, index) = T(3, index - 1)
+               T(2, index) = T(3, index - 1) + field_info%Nv
+               T(3, index) = T(2, index) + 1
+            end do
+         end do
+
+      else if (field_info%mesh_type == 504) then
+         !! 504: quadrilateral mesh information matrix.
+         N_nodes = (field_info%Nh + 1)*(field_info%Nv + 1)
+         N_elements = field_info%Nh*field_info%Nv
+         allocate (M(2, N_nodes), T(4, N_elements))
+
+         do index_col = 1, field_info%Nh + 1
+            do index_row = 1, field_info%Nv + 1
+               !! index of the node in the field.
+               index = (index_col - 1)*(field_info%Nv + 1) + index_row
+               M(1, index) = field_info%left + (index_col - 1)*field_info%h_partition
+               M(2, index) = field_info%bottom + (index_row - 1)*field_info%v_partition
+            end do
+         end do
+
+         do index_col = 1, field_info%Nh
+            do index_row = 1, field_info%Nv
+               !! index of the element in the field.
+               index = index_row + (index_col - 1)*field_info%Nv
+               !! index of the node in the element.
+               T(1, index) = (field_info%Nv + 1)*(index_col - 1) + index_row
+               T(2, index) = T(1, index) + field_info%Nv + 1
+               T(3, index) = T(2, index) + 1
+               T(4, index) = T(1, index) + 1
+
+            end do
          end do
       end if
    end subroutine generate_info_matrix
