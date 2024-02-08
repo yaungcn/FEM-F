@@ -1,11 +1,11 @@
-module mod_gauss_quad
+module mod_gauss_quad_1D
    use quadrature_module, wp => quadrature_wp
-   use mod_basis_func
-   use mod_co_func
+   use mod_basis_func_1D
+   use mod_co_func_1D
    implicit none
 
    private
-   public :: quad_1D, quad_2D, quad_A_1D, quad_b_1D
+   public :: quad_1D, quad_A_1D, quad_b_1D
 
    type, extends(integration_class_1d) :: quad_1D
       private
@@ -20,10 +20,6 @@ module mod_gauss_quad
       procedure :: init => init_1D
       ! procedure :: quad_func => quad_func_1D
    end type quad_1D
-
-   type, extends(integration_class_2d) :: quad_2D
-
-   end type quad_2D
 
 contains
    subroutine init_1D(self, co_func, &
@@ -89,4 +85,4 @@ contains
 
    end function quad_solution_1D
 
-end module mod_gauss_quad
+end module mod_gauss_quad_1D

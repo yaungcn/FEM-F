@@ -1,5 +1,4 @@
-program main
-
+program example_FE_2D
    use linear_pack, only: general_square_matrix
    use quadrature_module, only: wp => quadrature_wp
    use mod_FE_2D
@@ -50,4 +49,6 @@ program main
       deallocate (solution)
       h_partition = 1.0_wp/(2.0_wp)**(index + 2)
    end do
-end program main
+
+end program example_FE_2D
+

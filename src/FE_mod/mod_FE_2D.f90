@@ -1,14 +1,14 @@
-module mod_FE
+module mod_FE_2D
 
-   use mod_error
-   use mod_field
-   use mod_co_func
-   use mod_assemble
-   use mod_generate
-   use mod_gauss_quad
-   use mod_basis_func
-   use mod_treat_boundary
-   use mod_linear_solver
+   use mod_error_2D
+   use mod_field_2D
+   use mod_co_func_2D
+   use mod_assemble_2D
+   use mod_generate_2D
+   use mod_gauss_quad_2D
+   use mod_basis_func_2D
+   use mod_treat_boundary_2D
+   use mod_linear_solver_2D
    use quadrature_module, wp => quadrature_wp
 
 contains
@@ -55,7 +55,7 @@ contains
       num_of_elements = N_partition
 
       select case (field_info%basis_type)
-       case (101)
+      case (101)
          N_basis = N_partition
 
          M_basis = M_partition
@@ -63,9 +63,9 @@ contains
 
          num_of_trial_local_basis = 2
          num_of_test_local_basis = 2
-       case (102)
+      case (102)
          continue
-       case default
+      case default
          continue
       end select
 
@@ -76,20 +76,20 @@ contains
       solution = 0
 
       call assemble_matirx_1D(A, cofunc_a, &
-         M_partition, T_partition, &
-         T_basis, T_basis, &
-         num_of_elements, &
-         num_of_trial_local_basis, num_of_test_local_basis, &
-         trial_basis_type, trial_derivate_degree, &
-         test_basis_type, test_derivate_degree, &
-         field_info)
+                              M_partition, T_partition, &
+                              T_basis, T_basis, &
+                              num_of_elements, &
+                              num_of_trial_local_basis, num_of_test_local_basis, &
+                              trial_basis_type, trial_derivate_degree, &
+                              test_basis_type, test_derivate_degree, &
+                              field_info)
 
       call assemble_vector_1D(b, cofunc_f, &
-         M_partition, T_partition, &
-         T_basis, num_of_elements, &
-         num_of_test_local_basis, &
-         test_basis_type, b_test_derivate_degree, &
-         field_info)
+                              M_partition, T_partition, &
+                              T_basis, num_of_elements, &
+                              num_of_test_local_basis, &
+                              test_basis_type, b_test_derivate_degree, &
+                              field_info)
 
       boundarynodes = generate_boundarynodes(N_basis)
       !! Generate boundary nodes
@@ -98,4 +98,4 @@ contains
       call solver(A, b, solution)
       deallocate (A, b)
    end subroutine
-end module mod_FE
+end module mod_FE_2D

@@ -1,4 +1,4 @@
-module mod_linear_solver
+module mod_linear_solver_1D
    use quadrature_module, only: wp => quadrature_wp
    use linear_pack
    implicit none
@@ -22,4 +22,4 @@ contains
 
       solution(:, 1) = x_result(:)
    end subroutine solver
-end module mod_linear_solver
+end module mod_linear_solver_1D

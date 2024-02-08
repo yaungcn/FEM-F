@@ -1,4 +1,4 @@
-module mod_basis_func
+module mod_basis_func_2D
    use quadrature_module, only: wp => quadrature_wp
    implicit none
 
@@ -93,4 +93,4 @@ contains
 
    end function basis_func1D
 
-end module mod_basis_func
+end module mod_basis_func_2D

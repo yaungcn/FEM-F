@@ -1,4 +1,4 @@
-module mod_co_func
+module mod_co_func_2D
    use quadrature_module, only: wp => quadrature_wp
    implicit none
 
@@ -56,4 +56,4 @@ contains
          function_g = cos(1.0_wp)
       end select
    end function function_g
-end module mod_co_func
+end module mod_co_func_2D

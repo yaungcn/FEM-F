@@ -1,6 +1,6 @@
 name = "FEM-F"
 version = "0.1.0"
-license = "license"
+license = "MIT"
 author = "yaungcn"
 maintainer = "yaungcn@outlook.com"
 copyright = "Copyright 2023, yaungcn"
@@ -16,3 +16,8 @@ library = false
 implicit-typing = false
 implicit-external = true # default is false
 source-form = "free"
+# [dependencies]
+# toml-f = { git = "https://github.com/toml-f/toml-f" }
+# M_attr = { git = "https://github.com/urbanjost/M_attr.git" }
+# test-drive = { git = "https://github.com/fortran-lang/test-drive.git" }
+# fortran-lua53 = { git = "https://github.com/interkosmos/fortran-lua53.git" }

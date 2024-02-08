@@ -1,8 +1,8 @@
-module mod_assemble
-   use mod_co_func
-   use mod_basis_func
-   use mod_gauss_quad
-   use mod_field, only: field
+module mod_assemble_2D
+   use mod_co_func_2D
+   use mod_basis_func_2D
+   use mod_gauss_quad_2D
+   use mod_field_2D, only: field
    use quadrature_module, wp => quadrature_wp
    implicit none
    private
@@ -110,4 +110,4 @@ contains
 
       end do
    end subroutine assemble_vector_1D
-end module mod_assemble
+end module mod_assemble_2D

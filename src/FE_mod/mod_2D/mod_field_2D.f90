@@ -1,4 +1,4 @@
-module mod_field
+module mod_field_2D
    use quadrature_module, only: wp => quadrature_wp
    implicit none
 
@@ -45,4 +45,4 @@ contains
       end select
    end subroutine init_field
 
-end module mod_field
+end module mod_field_2D

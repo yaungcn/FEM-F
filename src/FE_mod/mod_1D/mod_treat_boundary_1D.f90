@@ -1,6 +1,6 @@
-module mod_treat_boundary
-   use mod_field, only: field
-   use mod_co_func
+module mod_treat_boundary_1D
+   use mod_field_1D, only: field
+   use mod_co_func_1D
    use quadrature_module, only: wp => quadrature_wp
    implicit none
    private
@@ -30,4 +30,4 @@ contains
 
       end do
    end subroutine treat_Dirchlet_boundary
-end module mod_treat_boundary
+end module mod_treat_boundary_1D

@@ -1,5 +1,5 @@
-module mod_generate
-   use mod_field, only: field
+module mod_generate_2D
+   use mod_field_2D, only: field
    use quadrature_module, only: wp => quadrature_wp
    implicit none
    private
@@ -50,4 +50,4 @@ contains
       generate_boundarynodes(3, 2) = 1
 
    end function generate_boundarynodes
-end module mod_generate
+end module mod_generate_2D

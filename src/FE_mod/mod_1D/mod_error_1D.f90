@@ -1,4 +1,4 @@
-module mod_error
+module mod_error_1D
    use quadrature_module, only: wp => quadrature_wp
    implicit none
 
@@ -24,4 +24,4 @@ contains
       real(wp) :: exact_solution
       exact_solution = x*cos(x)
    end function
-end module mod_error
+end module mod_error_1D
