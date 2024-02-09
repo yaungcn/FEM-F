@@ -42,10 +42,10 @@ contains
       self%right = right
       self%bottom = bottom
       self%top = top
-      self%h_partition = (right - left)/real(Nh, wp)
-      self%v_partition = (top - bottom)/real(Nv, wp)
       self%Nh = Nh
       self%Nv = Nv
+      self%h_partition = (right - left)/real(Nh, wp)
+      self%v_partition = (top - bottom)/real(Nv, wp)
       self%Gauss_point_number = Gauss_point_number
       select case (basis_type)
       case (201)
@@ -71,35 +71,35 @@ contains
       class(field), intent(inout) :: self
 
       if (self%left >= self%right) then
-         print *, "Error: left >= right"
-         stop
+         error stop 'Error: left >= right'
+
       else if (self%bottom >= self%top) then
-         print *, "Error: bottom >= top"
-         stop
+         error stop 'Error: bottom >= top'
+
       else if (self%h_partition <= 0) then
-         print *, "Error: h_partition <= 0"
-         stop
+         error stop 'Error: h_partition <= 0'
+
       else if (self%v_partition <= 0) then
-         print *, "Error: v_partition <= 0"
-         stop
+         error stop 'Error: v_partition <= 0'
+
       else if (self%Nh <= 0) then
-         print *, "Error: Nh <= 0"
-         stop
+         error stop 'Error: Nh <= 0'
+
       else if (self%Nv <= 0) then
-         print *, "Error: Nv <= 0"
-         stop
+         error stop 'Error: Nv <= 0'
+
       else if (self%Gauss_point_number <= 0) then
-         print *, "Error: Gauss_point_number <= 0"
-         stop
+         error stop 'Error: Gauss_point_number <= 0'
+
       else if (self%basis_type /= 201 .and. self%basis_type /= 202) then
-         print *, "Error: basis_type /= 201(for 2D linear, default) and basis_type /= 202(for 2D quadratic)"
-         stop
+         error stop 'Error: basis_type /= 201(for 2D linear, default) and basis_type /= 202(for 2D quadratic)'
+
       else if (self%mesh_type /= 503 .and. self%mesh_type /= 504) then
-         print *, "Error: mesh_type /= 503(for triangluar, default) and mesh_type /= 504(for quadrilateral)"
-         stop
+         error stop 'Error: mesh_type /= 503(for triangluar, default) and mesh_type /= 504(for quadrilateral)'
+
       end if
 
-      write (*, '(A)') "Field information is checked."
+      write (*, '(A)') 'Field information is checked.'
 
    end subroutine check_field
 
