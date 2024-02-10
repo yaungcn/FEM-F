@@ -11,10 +11,18 @@ module mod_field_2D
          !! The problem domain is [left,right]*[bottom,top].
       real(wp) :: h_partition, v_partition
          !! The step size of the vertical and horizontal partition.
-      integer :: Nh, Nv
+         !! h_partition = (right - left)/Nh
+         !! v_partition = (top - bottom)/Nv.
+      real(wp) :: h_basis, v_basis
+         !! The step size of the vertical and horizontal FE basis func.
+         !! h_basis = (right - left)/Nh_basis
+         !! v_basis = (top - bottom)/Nv_basis.
+      integer :: Nh_partition, Nv_partition
          !! The number of horizontal and vertical partition.
+      integer :: Nh_basis, Nv_basis
+         !! The number of the FE basis functions in the horizontal and vertical direction.
       real(wp) :: tolerance = 10000*epsilon(1.0_wp)
-      integer :: Gauss_point_number
+      integer :: Gauss_point_number = 4
          !! The number of Gauss Quadrature points.
       integer :: basis_type = 201
          !! 201: 2D linear;
@@ -29,11 +37,15 @@ module mod_field_2D
    end type field
 
 contains
-   subroutine init_field(self, left, right, bottom, top, Nh, Nv, Gauss_point_number, basis_type, mesh_type)
+   subroutine init_field(self, left, right, bottom, top, &
+                         Nh_partition, Nv_partition, &
+                         Nh_basis, Nv_basis, &
+                         Gauss_point_number, basis_type, mesh_type)
       !! TODO: to initialize the field information object 'field'.
       class(field), intent(inout) :: self
       real(wp), intent(in) :: left, right, bottom, top
-      integer, intent(in) :: Nh, Nv
+      integer, intent(in) :: Nh_partition, Nv_partition
+      integer, intent(in) :: Nh_basis, Nv_basis
       integer, intent(in) :: Gauss_point_number
       integer, intent(in), optional :: basis_type
       integer, intent(in), optional :: mesh_type
@@ -42,10 +54,14 @@ contains
       self%right = right
       self%bottom = bottom
       self%top = top
-      self%Nh = Nh
-      self%Nv = Nv
-      self%h_partition = (right - left)/real(Nh, wp)
-      self%v_partition = (top - bottom)/real(Nv, wp)
+      self%Nh_partition = Nh_partition
+      self%Nv_partition = Nv_partition
+      self%Nh_basis = Nh_basis
+      self%Nv_basis = Nv_basis
+      self%h_partition = (right - left)/real(Nh_partition, wp)
+      self%v_partition = (top - bottom)/real(Nv_partition, wp)
+      self%h_basis = (right - left)/real(Nh_basis, wp)
+      self%v_basis = (top - bottom)/real(Nv_basis, wp)
       self%Gauss_point_number = Gauss_point_number
       select case (basis_type)
       case (201)
@@ -82,11 +98,26 @@ contains
       else if (self%v_partition <= 0) then
          error stop 'Error: v_partition <= 0'
 
-      else if (self%Nh <= 0) then
+      else if (self%h_basis <= 0) then
+         error stop 'Error: h_basis <= 0'
+
+      else if (self%v_basis <= 0) then
+         error stop 'Error: v_basis <= 0'
+
+      else if (self%Nh_partition <= 0) then
          error stop 'Error: Nh <= 0'
 
-      else if (self%Nv <= 0) then
+      else if (self%Nv_partition <= 0) then
          error stop 'Error: Nv <= 0'
+
+      else if (self%Nh_basis <= 0) then
+         error stop 'Error: Nh_basis <= 0'
+
+      else if (self%Nv_basis <= 0) then
+         error stop 'Error: Nv_basis <= 0'
+
+      else if (self%tolerance <= 0) then
+         error stop 'Error: tolerance <= 0'
 
       else if (self%Gauss_point_number <= 0) then
          error stop 'Error: Gauss_point_number <= 0'

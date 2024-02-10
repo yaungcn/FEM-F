@@ -12,10 +12,12 @@ program main
    !> Field parameter input.
    real(wp) :: left = 0.0_wp, right = 1.0_wp, bottom = 0.0_wp, top = 1.0_wp
    !! The problem domain is [left,right]*[bottom,top].
-   integer :: Nh = 2, Nv = 2
+   integer :: Nh_parition = 2, Nv_parition = 2
    !! The number of partition in horizontal and vertical direction.
    ! real(wp) :: h_partition, v_partition
    !! The step size of the partition.
+   integer :: Nh_basis, Nv_basis
+   !! The number of FE basis functions in horizontal and vertical direction.
    integer :: Gauss_point_number = 8
    !! The number of Gauss Quadrature points.
    !> basis_type: the type of the FE.
@@ -28,6 +30,8 @@ program main
 
    real(wp), allocatable :: M(:, :)
    integer, allocatable :: T(:, :)
+   integer, allocatable :: boundarynodes(:, :)
+   integer, allocatable :: boundaryedges(:, :)
 
    ! real(wp), allocatable :: solution(:, :)
 
@@ -36,15 +40,28 @@ program main
 
    integer :: index, index_2
 
+   select case (basis_type)
+   case (201)
+      Nh_basis = Nh_parition
+      Nv_basis = Nv_parition
+   case (202)
+      Nh_basis = 2*Nh_parition
+      Nv_basis = 2*Nv_parition
+   end select
+
    print *, "------------------start------------------"
 
-   call field_info%init(left, right, bottom, top, Nh, Nv, Gauss_point_number, basis_type, mesh_type)
+   call field_info%init(left, right, bottom, top, &
+                        Nh_parition, Nv_parition, &
+                        Nh_basis, Nv_basis, &
+                        Gauss_point_number, &
+                        basis_type, mesh_type)
    call field_info%check()
    write (*, '(A,I3)') "mesh_type = ", field_info%mesh_type
 
    call generate_info_matrix(M, T, field_info)
-100 format(A, I2, A, I2, A)
-   write (*, 100) "the mesh size: [", Nv, "x", Nh, ']'
+100 format(A, I2.2, A, I2.2, A)
+   write (*, 100) "the mesh size: [", Nv_parition, "x", Nh_parition, ']'
    write (*, 100) "M = [", size(M, 1), "x", size(M, 2), ']'
    do index = 1, size(M, 1)
       do index_2 = 1, size(M, 2)
@@ -58,4 +75,18 @@ program main
       print *, T(index, :)
    end do
 
+   boundarynodes = generate_boundarynodes(field_info)
+   boundaryedges = generate_boundaryedges(field_info)
+
+   write (*, 100) "boundarynodes = [", size(boundarynodes, 1), "x", size(boundarynodes, 2), ']'
+   do index = 1, size(boundarynodes, 1)
+      print *, boundarynodes(index, :)
+   end do
+
+   write (*, 100) "boundaryedges = [", size(boundaryedges, 1), "x", size(boundaryedges, 2), ']'
+   do index = 1, size(boundaryedges, 1)
+      print *, boundaryedges(index, :)
+   end do
+
+   print *, "-------------------end-------------------"
 end program main

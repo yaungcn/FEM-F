@@ -91,7 +91,7 @@ contains
                               test_basis_type, b_test_derivate_degree, &
                               field_info)
 
-      boundarynodes = generate_boundarynodes(N_basis)
+      boundarynodes = generate_boundarynodes(field_info)
       !! Generate boundary nodes
       call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
 
