@@ -1,0 +1,54 @@
+program example_field_2D
+   use linear_pack, only: general_square_matrix
+   use quadrature_module, only: wp => quadrature_wp
+   use mod_FE_2D
+
+   implicit none
+
+   !> input information of field
+   type(field) :: field_info
+
+   !> Field parameter input.
+   real(wp) :: left = 0.0_wp, right = 1.0_wp, bottom = 0.0_wp, top = 1.0_wp
+      !! The problem domain is [left,right]*[bottom,top].
+   integer :: Nh_parition = 2, Nv_parition = 2
+      !! The number of partition in horizontal and vertical direction.
+      !! real(wp) :: h_partition, v_partition
+      !! The step size of the partition.
+   integer :: Nh_basis, Nv_basis
+      !! The number of FE basis functions in horizontal and vertical direction.
+   integer :: Gauss_point_number = 8
+      !! The number of Gauss Quadrature points.
+   !> basis_type: the type of the FE.
+   integer :: basis_type = 202
+      !! 201: 2D linear
+      !! 202: 2D quadratic
+   integer :: mesh_type = 504
+      !! 503: 2D triangular mesh;
+      !! 504: 2D quadrilateral mesh;
+
+   select case (basis_type)
+   case (201)
+      Nh_basis = Nh_parition
+      Nv_basis = Nv_parition
+   case (202)
+      Nh_basis = 2*Nh_parition
+      Nv_basis = 2*Nv_parition
+   end select
+
+   print *, "------------------Field Information------------------"
+   !! TODO: Input the field information.
+   !> Initialize the field information.
+   call field_info%init(left, right, bottom, top, &
+                        Nh_parition, Nv_parition, &
+                        Nh_basis, Nv_basis, &
+                        Gauss_point_number, &
+                        basis_type, mesh_type)
+
+   !> Check the field information.
+   call field_info%check()
+   !> Print the field information.
+   call field_info%print()
+
+   print *, "------------------Field Information-----------------"
+end program example_field_2D

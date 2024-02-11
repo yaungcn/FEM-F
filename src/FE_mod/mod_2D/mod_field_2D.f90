@@ -32,7 +32,7 @@ module mod_field_2D
          !! 504: 2D quadrilateral mesh;
 
    contains
-      procedure, pass(self) :: init => init_field, check => check_field
+      procedure, pass(self) :: init => init_field, check => check_field, print => print_field
 
    end type field
 
@@ -70,6 +70,7 @@ contains
          self%basis_type = basis_type
       case default
          self%basis_type = 201
+         print *, 'Warning: basis_type /= 201(for 2D linear, default) and basis_type /= 202(for 2D quadratic)'
       end select
 
       select case (mesh_type)
@@ -79,7 +80,10 @@ contains
          self%mesh_type = mesh_type
       case default
          self%basis_type = 503
+         print *, 'Warning: mesh_type /= 503(for triangluar, default) and mesh_type /= 504(for quadrilateral)'
       end select
+
+      write (*, '(A)') 'Field information initialized.'
    end subroutine init_field
 
    subroutine check_field(self)
@@ -130,8 +134,24 @@ contains
 
       end if
 
-      write (*, '(A)') 'Field information is checked.'
+      write (*, '(A)') 'Field information checked.'
 
    end subroutine check_field
 
+   subroutine print_field(self)
+      class(field), intent(in) :: self
+
+      write (*, '(A)') 'Field information:'
+      write (*, '(A, 2F12.6)') '| left, right = ', self%left, self%right
+      write (*, '(A, 2F12.6)') '| bottom, top = ', self%bottom, self%top
+      write (*, '(A, 2I6)') '| Nh_partition, Nv_partition = ', self%Nh_partition, self%Nv_partition
+      write (*, '(A, 2I6)') '| Nh_basis, Nv_basis = ', self%Nh_basis, self%Nv_basis
+      write (*, '(A, 2F12.6)') '| h_partition, v_partition = ', self%h_partition, self%v_partition
+      write (*, '(A, 2F12.6)') '| h_basis, v_basis = ', self%h_basis, self%v_basis
+      write (*, '(A, F12.6)') '| tolerance = ', self%tolerance
+      write (*, '(A, I6)') '| Gauss_point_number = ', self%Gauss_point_number
+      write (*, '(A, I6)') '| basis_type = ', self%basis_type
+      write (*, '(A, I6)') '| mesh_type = ', self%mesh_type
+
+   end subroutine print_field
 end module mod_field_2D
