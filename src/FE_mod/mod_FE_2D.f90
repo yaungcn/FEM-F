@@ -1,5 +1,6 @@
 module mod_FE_2D
 
+   use mod_message
    use mod_error_2D
    use mod_field_2D
    use mod_co_func_2D
@@ -91,7 +92,7 @@ contains
                               test_basis_type, b_test_derivate_degree, &
                               field_info)
 
-      boundarynodes = generate_boundarynodes(field_info)
+      call generate_boundarynodes(field_info, boundarynodes)
       !! Generate boundary nodes
       call treat_Dirchlet_boundary(cofunc_g, A, b, boundarynodes, M_basis)
 

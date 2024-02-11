@@ -1,0 +1,19 @@
+# This is the field information. Non't
+[field]
+id = "Field ID"
+name = "Field"
+description = "Field Description"
+[[field.domain]]
+left = 0.0 
+right = 1.0
+bottom = 0.0
+top = 1.0
+[[field.parition]]
+Nh = 2
+Nv = 2
+[[field.basis]]
+type = 201
+Nh = 2
+Nv = 2
+[[field.mesh]]
+type = 503

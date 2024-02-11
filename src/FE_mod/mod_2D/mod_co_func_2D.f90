@@ -1,4 +1,7 @@
 module mod_co_func_2D
+
+   !! TODO: use keyword (external) to define the co_func_2D
+
    use quadrature_module, only: wp => quadrature_wp
    implicit none
 

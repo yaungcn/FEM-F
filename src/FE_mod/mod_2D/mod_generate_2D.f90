@@ -1,13 +1,72 @@
 module mod_generate_2D
    use mod_field_2D, only: field
    use quadrature_module, only: wp => quadrature_wp
+   use mod_message, only: info_print
    implicit none
    private
 
    public :: generate_info_matrix, generate_boundarynodes, generate_boundaryedges
 
 contains
-   pure subroutine generate_info_matrix(M, T, field_info)
+   subroutine generate_info_matrix(field_info, M, T, verbose)
+      type(field), intent(in) :: field_info
+      real(wp), allocatable, intent(inout) :: M(:, :)
+      !! M(i, j): the coordinate of the j-th node in the field.
+      integer, allocatable, intent(inout) :: T(:, :)
+      !! T(i, j): the index of the nodes of the elements.
+      logical, optional, intent(in) :: verbose
+
+      call MT_matrix(M, T, field_info)
+      if (present(verbose)) then
+         if (verbose) then
+            call info_print("The M and T information matrix generated.")
+         end if
+      end if
+   end subroutine generate_info_matrix
+
+   subroutine generate_boundarynodes(field_info, boundarynodes, verbose)
+      type(field), intent(in) :: field_info
+      integer, allocatable, intent(inout) :: boundarynodes(:, :)
+      !! boundarynodes(1,k)=boundary_type: specify the type of the kth boundary node.
+      !!                   =-1: Dirichlet boundary node;
+      !!                   =-2: Neumann boundary node;
+      !!                   =-3: Robin boundary node.
+      !! boundarynodes(2,k): global index of the kth boundary node among all nodes of FE.
+      !!                      That is, the index of FE is used here.
+      !! boundarynodes(3,k): The normal direction of the kth boundary nodes.
+      logical, optional, intent(in) :: verbose
+
+      call boundary_nodes(boundarynodes, field_info)
+      if (present(verbose)) then
+         if (verbose) then
+            call info_print("The boundarynodes information matrix generated.")
+         end if
+      end if
+
+   end subroutine generate_boundarynodes
+
+   subroutine generate_boundaryedges(field_info, boundaryedges, verbose)
+      type(field), intent(in) :: field_info
+      integer, allocatable, intent(inout) :: boundaryedges(:, :)
+      !! boundaryedges(1,k)=boundary_type: specify the type of the kth boundary node.
+      !!                   =-1: Dirichlet boundary node;
+      !!                   =-2: Neumann boundary node;
+      !!                   =-3: Robin boundary node.
+      !! boundaryedges(2,k): index of the element which contains the kth boundary edge.
+      !! boundaryedges(3:4,k): index of the two end points of the kth boundary edge among all grid points, not the nodes of FE.
+      logical, optional, intent(in) :: verbose
+
+      call boundary_edges(boundaryedges, field_info)
+
+      if (present(verbose)) then
+         if (verbose) then
+            call info_print("The boundaryedges information matrix generated.")
+         end if
+      end if
+
+   end subroutine generate_boundaryedges
+
+   pure subroutine MT_matrix(M, T, field_info)
       real(wp), allocatable, intent(inout) :: M(:, :)
       !! M(i, j): the coordinate of the j-th node in the field.
       integer, allocatable, intent(inout) :: T(:, :)
@@ -172,15 +231,14 @@ contains
          end select
 
       end select
+   end subroutine MT_matrix
 
-   end subroutine generate_info_matrix
-
-   pure function generate_boundarynodes(field_info) result(boundarynodes)
+   pure subroutine boundary_nodes(boundarynodes, field_info)
       !! TODO: generater the information matrix for boundary nodes.
       !! Needs to be modified for different boundary conditions.
       !! Needs to be modified if we change te index of nodes and
       !!       elements in "generate_info_matrix".
-      integer, allocatable :: boundarynodes(:, :)
+      integer, allocatable, intent(inout) :: boundarynodes(:, :)
       type(field), intent(in) :: field_info
       integer :: Nh_b, Nv_b
       integer :: N_boundarynodes, boundary_type
@@ -221,14 +279,14 @@ contains
          boundarynodes(2, index) = 2*Nh_b + 2*Nv_b + 2 - index
       end do
 
-   end function generate_boundarynodes
+   end subroutine boundary_nodes
 
-   pure function generate_boundaryedges(field_info) result(boundaryedges)
+   pure subroutine boundary_edges(boundaryedges, field_info)
       !! TODO: generater the information matrix for boundary nodes.
       !! Needs to be modified for different boundary conditions.
       !! Needs to be modified if we change te index of nodes and
       !!       elements in "generate_info_matrix".
-      integer, allocatable :: boundaryedges(:, :)
+      integer, allocatable, intent(inout) :: boundaryedges(:, :)
       type(field), intent(in) :: field_info
       integer :: Nh_p, Nv_p
       integer :: N_boundaryedges, boundary_type
@@ -276,5 +334,5 @@ contains
          boundaryedges(4, index) = 2*Nh_p + 2*Nv_p + 1 - index
       end do
 
-   end function generate_boundaryedges
+   end subroutine boundary_edges
 end module mod_generate_2D

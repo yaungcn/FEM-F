@@ -13,8 +13,6 @@ program example_FE_2D
    !! The problem domain is [left,right]*[bottom,top].
    integer :: Nh = 3, Nv = 1
    !! The number of partition in horizontal and vertical direction.
-   ! real(wp) :: h_partition, v_partition
-   !! The step size of the partition.
    integer :: Gauss_point_number = 8
    !! The number of Gauss Quadrature points.
    !> basis_type: the type of the FE.
@@ -38,10 +36,10 @@ program example_FE_2D
    print *, "------------------start------------------"
 
    call field_info%init(left, right, bottom, top, Nh, Nv, Gauss_point_number, basis_type, mesh_type)
-   call field_info%check()
+
    print *, "mesh_type = ", field_info%mesh_type
 
-   call generate_info_matrix(M, T, field_info)
+   call generate_info_matrix(field_info, M, T)
 
    print *, "M = "
    do index = 1, size(M, 1)

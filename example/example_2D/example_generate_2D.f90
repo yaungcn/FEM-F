@@ -1,5 +1,5 @@
 program example_generate_2D
-         use linear_pack, only: general_square_matrix
+   use linear_pack, only: general_square_matrix
    use quadrature_module, only: wp => quadrature_wp
    use mod_FE_2D
 
@@ -13,8 +13,6 @@ program example_generate_2D
       !! The problem domain is [left,right]*[bottom,top].
    integer :: Nh_parition = 2, Nv_parition = 2
       !! The number of partition in horizontal and vertical direction.
-      !! real(wp) :: h_partition, v_partition
-      !! The step size of the partition.
    integer :: Nh_basis, Nv_basis
       !! The number of FE basis functions in horizontal and vertical direction.
    integer :: Gauss_point_number = 8
@@ -31,7 +29,6 @@ program example_generate_2D
    integer, allocatable :: T(:, :)
    integer, allocatable :: boundarynodes(:, :)
    integer, allocatable :: boundaryedges(:, :)
-
 
    integer :: index, index_2
 
@@ -50,14 +47,17 @@ program example_generate_2D
                         Nh_parition, Nv_parition, &
                         Nh_basis, Nv_basis, &
                         Gauss_point_number, &
-                        basis_type, mesh_type)
+                        tolerance=1.0e-6_wp, &
+                        basis_type=basis_type, &
+                        mesh_type=mesh_type)
    !> Check the field information.
    call field_info%check()
    !> Print the field information.
    call field_info%print()
 
    !> Generate the information matrix.
-   call generate_info_matrix(M, T, field_info)
+   call generate_info_matrix(field_info, M, T, verbose=.true.)
+   ! print *, "The information matrix generated."
 
 100 format(A, I2.2, A, I2.2, A)
    write (*, 100) "the mesh size: [", Nv_parition, "x", Nh_parition, ']'
@@ -74,8 +74,8 @@ program example_generate_2D
       print *, T(index, :)
    end do
 
-   boundarynodes = generate_boundarynodes(field_info)
-   boundaryedges = generate_boundaryedges(field_info)
+   call generate_boundarynodes(field_info, boundarynodes, verbose=.true.)
+   call generate_boundaryedges(field_info, boundaryedges, verbose=.true.)
 
    write (*, 100) "boundarynodes = [", size(boundarynodes, 1), "x", size(boundarynodes, 2), ']'
    do index = 1, size(boundarynodes, 1)

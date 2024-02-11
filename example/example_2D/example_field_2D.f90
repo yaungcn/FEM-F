@@ -13,8 +13,6 @@ program example_field_2D
       !! The problem domain is [left,right]*[bottom,top].
    integer :: Nh_parition = 2, Nv_parition = 2
       !! The number of partition in horizontal and vertical direction.
-      !! real(wp) :: h_partition, v_partition
-      !! The step size of the partition.
    integer :: Nh_basis, Nv_basis
       !! The number of FE basis functions in horizontal and vertical direction.
    integer :: Gauss_point_number = 8
@@ -38,17 +36,17 @@ program example_field_2D
 
    print *, "------------------Field Information------------------"
    !! TODO: Input the field information.
-   !> Initialize the field information.
+   !> Initialize and check the field information.
    call field_info%init(left, right, bottom, top, &
                         Nh_parition, Nv_parition, &
                         Nh_basis, Nv_basis, &
                         Gauss_point_number, &
-                        basis_type, mesh_type)
+                        tolerance=1.0e-6_wp, &
+                        basis_type=basis_type, &
+                        mesh_type=mesh_type)
 
-   !> Check the field information.
-   call field_info%check()
-   !> Print the field information.
-   call field_info%print()
+   !> Use the format (A,2F6.3) to print the field information.
+   call field_info%print('(A,2F6.3)')
 
    print *, "------------------Field Information-----------------"
 end program example_field_2D
