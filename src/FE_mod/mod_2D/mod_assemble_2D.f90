@@ -1,8 +1,6 @@
 module mod_assemble_2D
-   use mod_co_func_1D
-   ! use mod_basis_func_2D
-   use mod_basis_func_1D
-   use mod_gauss_quad_1D
+   use mod_co_func_2D
+   use mod_local_basis_func_2D
    use mod_gauss_quad_2D
    use mod_field_2D, only: field
    use quadrature_module, wp => quadrature_wp
