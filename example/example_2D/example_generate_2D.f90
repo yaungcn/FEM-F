@@ -46,9 +46,10 @@ program example_generate_2D
    call field_info%init(left, right, bottom, top, &
                         Nh_parition, Nv_parition, &
                         Nh_basis, Nv_basis, &
-                        Gauss_point_number, &
+                        Gauss_point_number=Gauss_point_number, &
                         tolerance=1.0e-6_wp, &
-                        basis_type=basis_type, &
+                        trial_basis_type=basis_type, &
+                        test_basis_type=basis_type, &
                         mesh_type=mesh_type)
    !> Check the field information.
    call field_info%check()

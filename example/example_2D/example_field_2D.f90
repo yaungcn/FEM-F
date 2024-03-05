@@ -18,10 +18,10 @@ program example_field_2D
    integer :: Gauss_point_number = 8
       !! The number of Gauss Quadrature points.
    !> basis_type: the type of the FE.
-   integer :: basis_type = 202
+   integer :: basis_type = 201
       !! 201: 2D linear
       !! 202: 2D quadratic
-   integer :: mesh_type = 504
+   integer :: mesh_type = 503
       !! 503: 2D triangular mesh;
       !! 504: 2D quadrilateral mesh;
 
@@ -40,9 +40,10 @@ program example_field_2D
    call field_info%init(left, right, bottom, top, &
                         Nh_parition, Nv_parition, &
                         Nh_basis, Nv_basis, &
-                        Gauss_point_number, &
+                        Gauss_point_number=Gauss_point_number, &
                         tolerance=1.0e-6_wp, &
-                        basis_type=basis_type, &
+                        trial_basis_type=basis_type, &
+                        test_basis_type=basis_type, &
                         mesh_type=mesh_type)
 
    !> Use the format (A,2F6.3) to print the field information.

@@ -11,8 +11,10 @@ program check_generate_2D_triangular
    !> Field parameter input.
    real(wp) :: left = 0.0_wp, right = 1.0_wp, bottom = 0.0_wp, top = 1.0_wp
       !! The problem domain is [left,right]*[bottom,top].
-   integer :: Nh = 3, Nv = 1
+   integer :: Nh = 8, Nv = 8
       !! The number of partition in horizontal and vertical direction.
+   integer :: Nh_basis, Nv_basis
+      !! The number of FE basis functions in horizontal and vertical direction.
    integer :: Gauss_point_number = 8
       !! The number of Gauss Quadrature points.
    integer :: basis_type = 201
@@ -27,21 +29,39 @@ program check_generate_2D_triangular
    integer, allocatable :: T(:, :)
    integer :: index
 
-   call field_info%init(left, right, bottom, top, Nh, Nv, Gauss_point_number, basis_type, mesh_type)
+   select case (basis_type)
+   case (201)
+      Nh_basis = Nh
+      Nv_basis = Nv
+   case (202)
+      Nh_basis = 2*Nh
+      Nv_basis = 2*Nv
+   end select
+
+   call field_info%init(left, right, bottom, top, &
+                        Nh, Nv, &
+                        Nh_basis, Nv_basis, &
+                        Gauss_point_number=Gauss_point_number, &
+                        tolerance=1.0e-6_wp, &
+                        trial_basis_type=basis_type, &
+                        test_basis_type=basis_type, &
+                        mesh_type=mesh_type)
    call field_info%check()
    write (*, '(A,I3)') "mesh_type = ", field_info%mesh_type
 
-   call generate_info_matrix(M, T, field_info)
+   call generate_info_matrix(field_info, M, T)
 
-   write (*, '(A,I1,A,I1)') "the mesh size: ", Nv, "x", Nh
-   write (*, '(A,I1,A,I1)') "M = ", size(M, 1), "x", size(M, 2)
+   write (*, '(A,I3.3,A,I3.3)') "the mesh size: ", Nv, "x", Nh
+   write (*, '(A,I1.1,A,I3.3)') "M = ", size(M, 1), "x", size(M, 2)
    do index = 1, size(M, 1)
       print *, M(index, :)
    end do
 
-   write (*, '(A,I1,A,I1)') "T = ", size(T, 1), "x", size(T, 2)
+   write (*, '(A,I1.1,A,I3.3)') "T = ", size(T, 1), "x", size(T, 2)
    do index = 1, size(T, 1)
       print *, T(index, :)
    end do
-   
+
+   print *, "noe=", field_info%number_of_elements
+
 end program check_generate_2D_triangular

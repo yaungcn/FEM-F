@@ -3,7 +3,7 @@ module mod_error_2D
    implicit none
 
 contains
-   function max_FE_err(solution, N_basis, left, h_basis)
+   pure function max_FE_err(solution, N_basis, left, h_basis)
       real(wp), intent(in) :: solution(:, :)
       integer, intent(in) :: N_basis
       real(wp), intent(in) :: left, h_basis
@@ -18,10 +18,10 @@ contains
       end do
    end function
 
-   function exact_solution(x)
+   pure function exact_solution(x, y)
       !! f(x) = x*cos(x)
-      real(wp), intent(in) :: x
+      real(wp), intent(in) :: x, y
       real(wp) :: exact_solution
-      exact_solution = x*cos(x)
+      exact_solution = x*y*(1 - x/2) *(1 - y)*exp(x + y)
    end function
 end module mod_error_2D

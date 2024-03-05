@@ -6,6 +6,17 @@ module mod_local_basis_func_2D
 
    public :: local_basis_func_2D
 
+   abstract interface
+      pure function local_basis_func(x, y, vertices, basis_type, basis_index, der_x, der_y) result(func)
+         import :: wp
+         real(wp), intent(in) :: x, y
+         real(wp), intent(in) :: vertices(2, 3)
+         integer, intent(in) :: basis_type, basis_index, der_x, der_y
+         real(wp) :: func
+
+      end function local_basis_func
+   end interface
+
 contains
    pure function local_basis_func_2D(x, y, vertices, basis_type, basis_index, der_x, der_y) result(func)
       !! the local basis function is generated from the reference basis function
@@ -32,7 +43,9 @@ contains
             func = (trf(x_hat, y_hat, basis_type, basis_index, 1, 0)*(-J_12) + &
                     trf(x_hat, y_hat, basis_type, basis_index, 0, 1)*J_11)/J_det
          case (2)
-            func = (trf(x_hat,y_hat,basis_type,basis_index,2,0)*J_12**2+trf(x_hat,y_hat,basis_type,basis_index,0,2)*J_11**2+trf(x_hat,y_hat,basis_type,basis_index,1,1)*(-2*J_11*J_12))/J_det**2
+            func = (trf(x_hat, y_hat, basis_type, basis_index, 2, 0)*J_12**2 + &
+                    trf(x_hat, y_hat, basis_type, basis_index, 0, 2)*J_11**2 + &
+                    trf(x_hat, y_hat, basis_type, basis_index, 1, 1)*(-2*J_11*J_12))/J_det**2
          case default
             error stop 'Error: der_y is not valid'
          end select

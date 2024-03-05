@@ -6,7 +6,7 @@ program main
    use mod_FE_2D
 
    implicit none
-   interface
+   abstract interface
       pure function local_basis_func(x, y, local_vertices, lbasis_type, basis_index, der_x, der_y) result(res)
          import :: wp
          real(wp), intent(in) :: x, y
@@ -39,17 +39,17 @@ program main
 
    !> Field parameter input.
    !>>TODO: read from toml file.
-   real(wp) :: left = 0.0_wp, right = 10.0_wp, bottom = 0.0_wp, top = 10.0_wp
+   real(wp) :: left = 0.0_wp, right = 1.0_wp, bottom = 0.0_wp, top = 1.0_wp
       !! The problem domain is [left,right]*[bottom,top].
-   integer :: Nh_parition = 100, Nv_parition = 100
+   integer :: Nh_parition = 2, Nv_parition = 2
       !! The number of partition in horizontal and vertical direction.
    ! real(wp) :: h_partition, v_partition
       !! The step size of the partition.
    integer :: Nh_basis, Nv_basis
       !! The number of FE basis functions in horizontal and vertical direction.
-   integer :: Gauss_point_number = 6
+   integer :: Gauss_point_number = 8
       !! The number of Gauss Quadrature points.
-   real(wp) :: tolerance = 1.0e-3_wp
+   real(wp) :: tolerance = 1.0e-6_wp
       !! The tolerance of the error.
    !> basis_type: the type of the FE.
    integer :: basis_type = 201
@@ -57,16 +57,18 @@ program main
       !! 202: 2D quadratic
    integer :: mesh_type = 503
       !! 503: 2D triangular mesh;
-      !! 504: 2D quadrilateral mesh; !!!NOT IMPLEMENTED YET!!!
+      !! 504: 2D quadrilateral mesh;
 
    real(wp), allocatable :: M(:, :), M_basis(:, :)
    integer, allocatable :: T(:, :), T_basis(:, :)
    integer, allocatable :: boundarynodes(:, :)
    integer, allocatable :: boundaryedges(:, :)
 
+   character(len=4096)   :: arg0
+
    real(wp), allocatable :: A(:, :), b(:, :), A1(:, :), A2(:, :)
    real(wp), allocatable :: solution(:, :)
-   ! real(wp) :: vet(2, 3)
+   real(wp) :: vet(2, 3)
 
    procedure(local_basis_func), pointer :: lbfunc => null()
    procedure(cofunc_2d), pointer :: cofunc => null()
@@ -84,6 +86,14 @@ program main
       Nv_basis = 2*Nv_parition
    end select
 
+   call attr_mode(manner='color') !! plain, color, raw, ansi
+   call info_print("PROGRAM START.")
+
+   call get_command_argument(0, arg0)
+   if (index(arg0, '/') .ne. 0) arg0 = arg0(index(arg0, '/', back=.true.) + 1:)
+   if (index(arg0, '\') .ne. 0) arg0 = arg0(index(arg0, '\', back=.true.) + 1:)
+   call alert("DATE   ", "<YE><MO><DA> <HR>:<MI>:<SE>.<MS> <TZ>", arg0)
+
    call field_info%init(left, right, bottom, top, &
                         Nh_parition, Nv_parition, &
                         Nh_basis, Nv_basis, &
@@ -93,29 +103,27 @@ program main
                         test_basis_type=basis_type, &
                         mesh_type=mesh_type)
 
-   ! call field_info%print('(A,2F6.3)')
+   call field_info%print('(A,2F6.3)')
 
-   !> Allocate memory to A, b and solution. Set to zero.
-   allocate (A(field_info%number_of_nodes_fe, field_info%number_of_nodes_fe))
-   allocate (A1(field_info%number_of_nodes_fe, field_info%number_of_nodes_fe))
-   allocate (A2(field_info%number_of_nodes_fe, field_info%number_of_nodes_fe))
-   allocate (b(field_info%number_of_nodes_fe, 1))
-   allocate (solution(field_info%number_of_nodes_fe, 1))
-   A1 = 0
-   A2 = 0
-   A = 0
-   b = 0
-   solution = 0
-
-   call generate_info_matrix(field_info, M, T, &
-                             basis_type=basis_type, verbose=.true.)
-   call generate_info_matrix(field_info, M_basis, T_basis, &
-                             basis_type=basis_type, verbose=.true.)
+   call generate_info_matrix(field_info, M, T, verbose=.true.)
+   !!!
+   print *, "M = ", M
+   print *, "T = ", T
+   vet(:, :) = M(:, T(:, 1))
+   print *, "vet = ", vet
+   print *, lbfunc(0.5_wp, 0.5_wp, vet, 1, 1, 0, 0)
+   !!!
    call generate_boundarynodes(field_info, boundarynodes, verbose=.true.)
    call generate_boundaryedges(field_info, boundaryedges, verbose=.true.)
 
-   !! Assemble the matrix and vector.
-   !! Triangular mesh.
+   select case (basis_type)
+   case (201)
+      M_basis = M
+      T_basis = T
+   case (202)
+      error stop "Not implemented yet."
+   end select
+
    call assemble_matirx_2D(A1, cofunc, lbfunc, &
                            M, T, &
                            T_basis, T_basis, &
@@ -128,20 +136,17 @@ program main
                            0, 1, &
                            0, 1, &
                            field_info)
-
    A = A1 + A2
-   deallocate (A1, A2)
+
    call assemble_vector_2D(b, cofuncf, lbfunc, &
                            M, T, &
                            T_basis, &
-                           0, 0, &
+                           1, 1, &
                            field_info)
+
    call treat_Dirchlet_boundary(function_g, A, b, boundarynodes, M)
 
-   !! Solve the linear system.
    call solver(A, b, solution)
-
-   deallocate (A, b)
 
    call info_print("PROGRAM END.")
 end program main

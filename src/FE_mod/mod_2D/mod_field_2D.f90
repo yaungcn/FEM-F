@@ -1,6 +1,7 @@
 module mod_field_2D
    use quadrature_module, only: wp => quadrature_wp
    use mod_message, only: info_print, warn_print, error_print
+   use M_attr, only: attr
    implicit none
 
    private
@@ -23,15 +24,28 @@ module mod_field_2D
       integer :: Nh_basis, Nv_basis
          !! The number of the FE basis functions in the horizontal and vertical direction.
       real(wp) :: tolerance = 10000*epsilon(1.0_wp)
-         !! The tolerance for the iterative solver.                        Not used yet.!!
+         !! The tolerance for the iterative solver.
       integer :: Gauss_point_number = 4
          !! The number of Gauss Quadrature points.
-      integer :: basis_type = 201
+      integer :: trial_basis_type = 201
+         !! 201: 2D linear;
+         !! 202: 2D quadratic;
+      integer :: test_basis_type = 201
          !! 201: 2D linear;
          !! 202: 2D quadratic;
       integer :: mesh_type = 503
          !! 503: 2D triangular mesh;
          !! 504: 2D quadrilateral mesh;
+      integer :: number_of_elements = 0
+         !! The number of elements in the mesh.
+      integer :: number_of_nodes_mesh = 0
+         !! The number of nodes in the mesh.
+      integer :: number_of_nodes_fe = 0
+         !! The number of nodes in the FE mesh.
+      integer :: number_of_local_basis_trial = 0
+         !! The number of local basis functions for trial function.
+      integer :: number_of_local_basis_test = 0
+         !! The number of local basis functions for test function.
 
    contains
       procedure, pass(self) :: init => init_field, check => check_field, print => print_field
@@ -42,7 +56,8 @@ contains
    subroutine init_field(self, left, right, bottom, top, &
                          Nh_partition, Nv_partition, &
                          Nh_basis, Nv_basis, &
-                         Gauss_point_number, tolerance, basis_type, mesh_type)
+                         Gauss_point_number, tolerance, &
+                         trial_basis_type, test_basis_type, mesh_type)
       !! TODO: to initialize the field information object 'field'.
       class(field), intent(inout) :: self
       real(wp), intent(in) :: left, right, bottom, top
@@ -50,7 +65,7 @@ contains
       integer, intent(in) :: Nh_basis, Nv_basis
       integer, intent(in), optional :: Gauss_point_number
       real(wp), intent(in), optional :: tolerance
-      integer, intent(in), optional :: basis_type
+      integer, intent(in), optional :: trial_basis_type, test_basis_type
       integer, intent(in), optional :: mesh_type
 
       self%left = left
@@ -65,6 +80,9 @@ contains
       self%v_partition = (top - bottom)/real(Nv_partition, wp)
       self%h_basis = (right - left)/real(Nh_basis, wp)
       self%v_basis = (top - bottom)/real(Nv_basis, wp)
+
+      self%number_of_nodes_mesh = (Nh_partition + 1)*(Nv_partition + 1)
+      self%number_of_nodes_fe = (Nh_basis + 1)*(Nv_basis + 1)
 
       if (present(Gauss_point_number)) then
          self%Gauss_point_number = Gauss_point_number
@@ -84,11 +102,19 @@ contains
          ! write (*, '(A)') 'Warning: tolerance not set, use default value 1.0e-2'
       end if
 
-      if (present(basis_type)) then
-         self%basis_type = basis_type
+      if (present(trial_basis_type)) then
+         self%trial_basis_type = trial_basis_type
       else
-         self%basis_type = 201
-         call warn_print('basis_type not set, use default value 201(for 2D linear) or 202(for 2D quadratic)')
+         self%trial_basis_type = 201
+         call warn_print('trial_basis_type not set, use default value 201(for 2D linear) or 202(for 2D quadratic)')
+         ! write (*, '(A)') 'Warning: basis_type /= 201(for 2D linear) or 202(for 2D quadratic), use default value 201'
+      end if
+
+      if (present(test_basis_type)) then
+         self%test_basis_type = test_basis_type
+      else
+         self%test_basis_type = 201
+         call warn_print('test_basis_type not set, use default value 201(for 2D linear) or 202(for 2D quadratic)')
          ! write (*, '(A)') 'Warning: basis_type /= 201(for 2D linear) or 202(for 2D quadratic), use default value 201'
       end if
 
@@ -99,6 +125,52 @@ contains
          call warn_print('mesh_type not set, use default value 503(for triangluar) or 504(for quadrilateral)')
          ! write (*, '(A)') 'Warning: mesh_type /= 503(for triangluar) or 504(for quadrilateral), use default value 503'
       end if
+
+      select case (mesh_type)
+      case (503)
+         self%number_of_elements = 2*Nh_partition*Nv_partition
+         select case (trial_basis_type)
+         case (201)
+            self%number_of_local_basis_trial = 3
+         case (202)
+            self%number_of_local_basis_trial = 6
+         case default
+            call error_print('Undefined trial_basis_type')
+            stop
+         end select
+         select case (test_basis_type)
+         case (201)
+            self%number_of_local_basis_test = 3
+         case (202)
+            self%number_of_local_basis_test = 6
+         case default
+            call error_print('Undefined test_basis_type')
+            stop
+         end select
+      case (504)
+         self%number_of_elements = Nh_partition*Nv_partition
+         select case (trial_basis_type)
+         case (201)
+            self%number_of_local_basis_trial = 4
+         case (202)
+            self%number_of_local_basis_trial = 9
+         case default
+            call error_print('Undefined trial_basis_type')
+            stop
+         end select
+         select case (test_basis_type)
+         case (201)
+            self%number_of_local_basis_test = 4
+         case (202)
+            self%number_of_local_basis_test = 9
+         case default
+            call error_print('Undefined test_basis_type')
+            stop
+         end select
+      case default
+         call error_print('Undefined mesh_type')
+         stop
+      end select
 
       call info_print('Field information initialized.')
       call check_field(self)
@@ -145,11 +217,25 @@ contains
       else if (self%Gauss_point_number <= 0) then
          error stop 'Error: Gauss_point_number <= 0'
 
-      else if (self%basis_type /= 201 .and. self%basis_type /= 202) then
-         error stop 'Error: basis_type /= 201(for 2D linear, default) and basis_type /= 202(for 2D quadratic)'
+      else if (self%trial_basis_type /= 201 .and. self%trial_basis_type /= 202) then
+         error stop 'Error: trial_basis_type /= 201(for 2D linear, default) and basis_type /= 202(for 2D quadratic)'
+
+      else if (self%test_basis_type /= 201 .and. self%test_basis_type /= 202) then
+         error stop 'Error: test_basis_type /= 201(for 2D linear, default) and basis_type /= 202(for 2D quadratic)'
 
       else if (self%mesh_type /= 503 .and. self%mesh_type /= 504) then
          error stop 'Error: mesh_type /= 503(for triangluar, default) and mesh_type /= 504(for quadrilateral)'
+
+      else if (self%number_of_elements <= 0) then
+         error stop 'Error: number_of_elements <= 0'
+      else if (self%number_of_nodes_mesh <= 0) then
+         error stop 'Error: number_of_nodes_mesh <= 0'
+      else if (self%number_of_nodes_fe <= 0) then
+         error stop 'Error: number_of_nodes_fe <= 0'
+      else if (self%number_of_local_basis_trial <= 0) then
+         error stop 'Error: number_of_local_basis_trial <= 0'
+      else if (self%number_of_local_basis_test <= 0) then
+         error stop 'Error: number_of_local_basis_test <= 0'
 
       end if
 
@@ -171,7 +257,7 @@ contains
       end if
 
       write (*, '(A)') ' -----------------------------------------------------------------'
-      write (*, '(A)') ' | Field information:'
+      write (*, '(A)') attr(' |<bo><in> Field information: </in></bo>')
       write (*, float_format) ' |   left, right = ', self%left, self%right
       write (*, float_format) ' |   bottom, top = ', self%bottom, self%top
       write (*, '(A, 2I6)') ' |   Nh_partition, Nv_partition = ', self%Nh_partition, self%Nv_partition
@@ -180,8 +266,14 @@ contains
       write (*, float_format) ' |   ->h_basis, v_basis = ', self%h_basis, self%v_basis
       write (*, '(A, I6)') ' |   Gauss_point_number = ', self%Gauss_point_number
       write (*, '(A, 2F12.6)') ' |   tolerance  = ', self%tolerance
-      write (*, '(A, I6)') ' |   basis_type = ', self%basis_type
+      write (*, '(A, I6)') ' |   trial_basis_type = ', self%trial_basis_type
+      write (*, '(A, I6)') ' |   test_basis_type  = ', self%test_basis_type
       write (*, '(A, I6)') ' |   mesh_type  = ', self%mesh_type
+      write (*, '(A, I6)') ' |   number_of_elements   = ', self%number_of_elements
+      write (*, '(A, I6)') ' |   number_of_nodes_mesh = ', self%number_of_nodes_mesh
+      write (*, '(A, I6)') ' |   number_of_nodes_fe   = ', self%number_of_nodes_fe
+      write (*, '(A, I6)') ' |   number_of_local_basis_trial = ', self%number_of_local_basis_trial
+      write (*, '(A, I6)') ' |   number_of_local_basis_test  = ', self%number_of_local_basis_test
       write (*, '(A)') ' -----------------------------------------------------------------'
 
    end subroutine print_field

@@ -6,7 +6,7 @@ module mod_ref_basis_func_2D
    public :: triangular_ref_basis_func_2D
 
 contains
-   pure elemental function triangular_ref_basis_func_2D(x, y, basis_type, basis_index, der_x, der_y) result(func)
+   pure function triangular_ref_basis_func_2D(x, y, basis_type, basis_index, der_x, der_y) result(func)
       real(wp), intent(in) :: x, y
       integer, intent(in) :: basis_type, basis_index, der_x, der_y
       real(wp) :: func
@@ -55,7 +55,7 @@ contains
                end select
             !! case (1) der_x = der_y = 1 is not implemented.
             case default
-               error stop "triangular_ref_basis_func_2D: Invalid basis index for linear basis function"
+               error stop "triangular_ref_basis_func_2D: Invalid basis index for linear basis function, der_x = 1, der_y /= 0"
             end select
          end select
 

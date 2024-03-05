@@ -8,15 +8,22 @@ module mod_generate_2D
    public :: generate_info_matrix, generate_boundarynodes, generate_boundaryedges
 
 contains
-   subroutine generate_info_matrix(field_info, M, T, verbose)
+   subroutine generate_info_matrix(field_info, M, T, basis_type, verbose)
       type(field), intent(in) :: field_info
       real(wp), allocatable, intent(inout) :: M(:, :)
       !! M(i, j): the coordinate of the j-th node in the field.
       integer, allocatable, intent(inout) :: T(:, :)
       !! T(i, j): the index of the nodes of the elements.
+      integer, optional, intent(in) :: basis_type
+      !! if trial and test basis function are different, generated different M and T.
       logical, optional, intent(in) :: verbose
 
-      call MT_matrix(M, T, field_info)
+      if (present(basis_type)) then
+         call MT_matrix(M, T, field_info, basis_type)
+      else
+         call MT_matrix(M, T, field_info, field_info%trial_basis_type)
+      end if
+
       if (present(verbose)) then
          if (verbose) then
             call info_print("The M and T information matrix generated.")
@@ -66,12 +73,13 @@ contains
 
    end subroutine generate_boundaryedges
 
-   pure subroutine MT_matrix(M, T, field_info)
+   pure subroutine MT_matrix(M, T, field_info, basis_type)
       real(wp), allocatable, intent(inout) :: M(:, :)
       !! M(i, j): the coordinate of the j-th node in the field.
       integer, allocatable, intent(inout) :: T(:, :)
       !! T(i, j): the index of the nodes of the elements.
       type(field), intent(in) :: field_info
+      integer, intent(in) :: basis_type
       integer :: Nh_p, Nv_p, Nh_b, Nv_b
       integer :: index, index_col, index_row, N_nodes, N_elements
 
@@ -80,7 +88,7 @@ contains
       Nh_b = field_info%Nh_basis
       Nv_b = field_info%Nv_basis
 
-      select case (field_info%basis_type)
+      select case (basis_type)
       case (201)
          !> For 2D linear FE, M_partition,T_partition are the same as M_basis,T_basis.
          !! N_nodes: the number of nodes in the field.
@@ -91,7 +99,7 @@ contains
 
          case (503)!! 503: triangular mesh information matrix.
             N_nodes = (Nh_p + 1)*(Nv_p + 1)
-            N_elements = Nh_b*Nv_p
+            N_elements = Nh_p*Nv_p*2 !! 2 triangle elements in each rectangle.
             allocate (M(2, N_nodes), T(3, N_elements))
 
             !> generate the information matrix M and T.

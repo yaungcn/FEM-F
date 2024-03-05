@@ -24,3 +24,49 @@ boundaryedges = [04x08]
            1           4           7           8           9           6           3           2
            4           7           8           9           6           3           2           1
  -------------------end-------------------
+ 
+ !! attr_mode("plain")
+ 23:09:27.373 : (FEM-F) : info     -> PROGRAM START.
+ 23:09:27.373 : (FEM-F) : DATE     -> 20240211 23:09:27.373 +0800 FEM-F
+ 23:09:27.373 : (FEM-F) : info     -> Field information initialized.
+ 23:09:27.373 : (FEM-F) : info     -> Field information checked.
+ -----------------------------------------------------------------
+ | Field information: 
+ |   left, right =  0.000 1.000
+ |   bottom, top =  0.000 1.000
+ |   Nh_partition, Nv_partition =      2     2
+ |   ->h_partition, v_partition =  0.500 0.500
+ |   Nh_basis, Nv_basis =      4     4
+ |   ->h_basis, v_basis =  0.250 0.250
+ |   Gauss_point_number =      8
+ |   tolerance  =     0.000001
+ |   basis_type =    202
+ |   mesh_type  =    504
+ -----------------------------------------------------------------
+ 23:09:27.373 : (FEM-F) : info     -> The M and T information matrix generated.
+ 23:09:27.373 : (FEM-F) : info     -> The boundarynodes information matrix generated.
+ 23:09:27.373 : (FEM-F) : info     -> The boundaryedges information matrix generated.
+ 23:09:27.373 : (FEM-F) : info     -> PROGRAM END.
+
+ !! attr_mode("raw")
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> PROGRAM START.
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><c>DATE    </c></EBONY> -<gt> <YE><MO><DA> <HR>:<MI>:<SE>.<MS> <TZ> FEM-F
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> Field information initialized.
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> Field information checked.
+ -----------------------------------------------------------------
+ |<bo><in> Field information: </in></bo>
+ |   left, right =  0.000 1.000
+ |   bottom, top =  0.000 1.000
+ |   Nh_partition, Nv_partition =      2     2
+ |   ->h_partition, v_partition =  0.500 0.500
+ |   Nh_basis, Nv_basis =      4     4
+ |   ->h_basis, v_basis =  0.250 0.250
+ |   Gauss_point_number =      8
+ |   tolerance  =     0.000001
+ |   basis_type =    202
+ |   mesh_type  =    504
+ -----------------------------------------------------------------
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> The M and T information matrix generated.
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> The boundarynodes information matrix generated.
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> The boundaryedges information matrix generated.
+ <b>23:12:12.025</b> : (FEM-F) : <EBONY><bo><g>info    </g></EBONY> -<gt> PROGRAM END.

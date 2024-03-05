@@ -6,51 +6,45 @@ module mod_co_func_2D
    implicit none
 
    private
-   public :: func, func_a, func_f, func_g
-
-   type, abstract :: func
-   contains
-      procedure(func_abstract), nopass, deferred :: func_pass
-   end type
+   public :: function_c, function_f, function_g
 
    abstract interface
-      function func_abstract(x)
+   !! add pure
+      pure function cofunc_1d(x)
          import :: wp
          real(wp), intent(in) :: x
-         real(wp) :: func_abstract
-      end function func_abstract
+         real(wp) :: cofunc_1d
+      end function cofunc_1d
+   !! add pure, 2D
+      pure function cofunc_2d(x, y)
+         import :: wp
+         real(wp), intent(in) :: x, y
+         real(wp) :: cofunc_2d
+      end function cofunc_2d
+   !! add pure, 2D, time
+      pure function cofunc_2d_t(x, y, t)
+         import :: wp
+         real(wp), intent(in) :: x, y, t
+         real(wp) :: cofunc_2d_t
+      end function cofunc_2d_t
    end interface
 
-   type, extends(func) :: func_a
-   contains
-      procedure, nopass :: func_pass => function_a
-   end type
-
-   type, extends(func) :: func_f
-   contains
-      procedure, nopass :: func_pass => function_f
-   end type
-
-   type, extends(func) :: func_g
-   contains
-      procedure, nopass :: func_pass => function_g
-   end type
 contains
+!! add pure
+   pure function function_c(x, y)
+      real(wp), intent(in) :: x, y
+      real(wp) :: function_c
+      function_c = exp(x)
+   end function function_c
 
-   function function_a(x)
-      real(wp), intent(in) :: x
-      real(wp) :: function_a
-      function_a = exp(x)
-   end function function_a
-
-   function function_f(x)
-      real(wp), intent(in) :: x
+   pure function function_f(x, y)
+      real(wp), intent(in) :: x, y
       real(wp) :: function_f
       function_f = -exp(x)*(cos(x) - 2*sin(x) - x*cos(x) - x*sin(x))
    end function function_f
 
-   function function_g(x)
-      real(wp), intent(in) :: x
+   pure function function_g(x, y)
+      real(wp), intent(in) :: x, y
       real(wp) :: function_g
       select case (int(x))
       case (0)
