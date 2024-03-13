@@ -1,7 +1,7 @@
 module mod_basis_func_2D
    use mod_field_2D, only: field
    use mod_local_basis_func_2D, only: local_basis_func_2D
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    implicit none
 
    private

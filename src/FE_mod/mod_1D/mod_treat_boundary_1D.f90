@@ -1,7 +1,7 @@
 module mod_treat_boundary_1D
    use mod_field_1D, only: field
    use mod_co_func_1D
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    implicit none
    private
    public :: treat_Dirchlet_boundary

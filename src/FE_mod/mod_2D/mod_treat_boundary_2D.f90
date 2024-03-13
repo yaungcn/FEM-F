@@ -1,7 +1,7 @@
 module mod_treat_boundary_2D
+   use mod_kinds
    use mod_field_2D, only: field
    use mod_co_func_2D
-   use quadrature_module, only: wp => quadrature_wp
    implicit none
    private
    public :: treat_Dirchlet_boundary
@@ -10,7 +10,7 @@ contains
                                       A, b, boundarynodes, M_basis)
       real(wp), external :: Dirichlet_boundary_function
       real(wp), intent(inout) :: A(:, :)
-      real(wp), intent(inout) :: b(:, :)
+      real(wp), intent(inout) :: b(:)
       integer, intent(in) :: boundarynodes(:, :)
       real(wp) :: M_basis(:, :)
 
@@ -24,7 +24,7 @@ contains
             index = boundarynodes(2, k_index)
             A(index, :) = 0
             A(index, index) = 1
-            b(index, 1) = Dirichlet_boundary_function(M_basis(1, index), M_basis(2, index))
+            b(index) = Dirichlet_boundary_function(M_basis(1, index), M_basis(2, index))
 
          end if
 

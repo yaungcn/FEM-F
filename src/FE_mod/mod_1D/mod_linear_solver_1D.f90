@@ -1,5 +1,5 @@
 module mod_linear_solver_1D
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    use linear_pack
    implicit none
    private

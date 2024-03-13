@@ -1,5 +1,5 @@
 module mod_local_basis_func_2D
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    use mod_ref_basis_func_2D, only: trf => triangular_ref_basis_func_2D
    implicit none
    private

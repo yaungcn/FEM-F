@@ -1,5 +1,6 @@
 module mod_gauss_quad_1D
-   use quadrature_module, wp => quadrature_wp
+   use mod_kinds
+   use quadrature_module
    use mod_basis_func_1D
    use mod_co_func_1D
    implicit none
@@ -10,11 +11,11 @@ module mod_gauss_quad_1D
    type, extends(integration_class_1d) :: quad_1D
       private
       class(func), pointer :: co_func
-            !! The coefficient function of the integrand.
+      !! The coefficient function of the integrand.
       class(local_basis), pointer :: basis_trial
-            !! local trial basis function
+      !! local trial basis function
       class(local_basis), pointer :: basis_test
-            !! local trial basis function
+      !! local trial basis function
 
    contains
       procedure :: init => init_1D
@@ -23,7 +24,7 @@ module mod_gauss_quad_1D
 
 contains
    subroutine init_1D(self, co_func, &
-                      basis_trial, basis_test)
+      basis_trial, basis_test)
       class(quad_1D), intent(inout) :: self
       class(func), target :: co_func
       class(local_basis), target :: basis_trial, basis_test
@@ -42,11 +43,11 @@ contains
       real(wp) :: f
 
       select type (self)
-      class is (quad_1D)
+       class is (quad_1D)
          f = self%co_func%func_pass(x)* &
-             self%basis_trial%basis_f(x)* &
-             self%basis_test%basis_f(x)
-      class default
+            self%basis_trial%basis_f(x)* &
+            self%basis_test%basis_f(x)
+       class default
          error stop "Undefined Class"
       end select
 
@@ -60,10 +61,10 @@ contains
       real(wp) :: f
 
       select type (self)
-      class is (quad_1D)
+       class is (quad_1D)
          f = self%co_func%func_pass(x)* &
-             self%basis_test%basis_f(x)
-      class default
+            self%basis_test%basis_f(x)
+       class default
          error stop "Undefined Class"
       end select
 
@@ -76,10 +77,10 @@ contains
       real(wp) :: f
 
       select type (self)
-      class is (quad_1D)
+       class is (quad_1D)
          f = self%co_func%func_pass(x)* &
-             self%basis_test%basis_f(x)
-      class default
+            self%basis_test%basis_f(x)
+       class default
          error stop "Undefined Class"
       end select
 

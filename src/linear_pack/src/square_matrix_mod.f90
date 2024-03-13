@@ -1,5 +1,5 @@
 module square_matrix_mod
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    implicit none
    private
 

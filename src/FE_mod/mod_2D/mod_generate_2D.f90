@@ -1,6 +1,6 @@
 module mod_generate_2D
+   use mod_kinds
    use mod_field_2D, only: field
-   use quadrature_module, only: wp => quadrature_wp
    use mod_message, only: info_print
    implicit none
    private
@@ -89,7 +89,7 @@ contains
       Nv_b = field_info%Nv_basis
 
       select case (basis_type)
-      case (201)
+       case (201)
          !> For 2D linear FE, M_partition,T_partition are the same as M_basis,T_basis.
          !! N_nodes: the number of nodes in the field.
          !! N_elements: the number of elements in the field,
@@ -97,7 +97,7 @@ contains
          !! T: the index of the nodes of the elements.
          select case (field_info%mesh_type)
 
-         case (503)!! 503: triangular mesh information matrix.
+          case (503)!! 503: triangular mesh information matrix.
             N_nodes = (Nh_p + 1)*(Nv_p + 1)
             N_elements = Nh_p*Nv_p*2 !! 2 triangle elements in each rectangle.
             allocate (M(2, N_nodes), T(3, N_elements))
@@ -105,7 +105,7 @@ contains
             !> generate the information matrix M and T.
             do index_col = 1, Nh_p + 1
                do index_row = 1, Nv_p + 1
-               !! index of the node in the field.
+                  !! index of the node in the field.
                   index = (index_col - 1)*(Nv_p + 1) + index_row
                   M(1, index) = field_info%left + (index_col - 1)*field_info%h_partition
                   M(2, index) = field_info%bottom + (index_row - 1)*field_info%v_partition
@@ -114,20 +114,20 @@ contains
 
             do index_col = 1, Nh_p
                do index_row = 1, Nv_p
-               !! index of the element in the field.
+                  !! index of the element in the field.
                   index = 2*index_row + 2*(index_col - 1)*Nv_p
-               !! down triangle.
+                  !! down triangle.
                   T(1, index - 1) = (Nv_p + 1)*(index_col - 1) + index_row
                   T(2, index - 1) = T(1, index - 1) + Nv_p + 1
                   T(3, index - 1) = T(1, index - 1) + 1
-               !! up triangle.
+                  !! up triangle.
                   T(1, index) = T(3, index - 1)
                   T(2, index) = T(3, index - 1) + Nv_p
                   T(3, index) = T(2, index) + 1
                end do
             end do
 
-         case (504)!! 504: quadrilateral mesh information matrix.
+          case (504)!! 504: quadrilateral mesh information matrix.
             N_nodes = (Nh_p + 1)*(Nv_p + 1)
             N_elements = Nh_p*Nv_p
             allocate (M(2, N_nodes), T(4, N_elements))
@@ -135,7 +135,7 @@ contains
             !> generate the information matrix M and T.
             do index_col = 1, Nh_p + 1
                do index_row = 1, Nv_p + 1
-               !! index of the node in the field.
+                  !! index of the node in the field.
                   index = (index_col - 1)*(Nv_p + 1) + index_row
                   M(1, index) = field_info%left + (index_col - 1)*field_info%h_partition
                   M(2, index) = field_info%bottom + (index_row - 1)*field_info%v_partition
@@ -144,9 +144,9 @@ contains
 
             do index_col = 1, Nh_p
                do index_row = 1, Nv_p
-               !! index of the element in the field.
+                  !! index of the element in the field.
                   index = index_row + (index_col - 1)*Nv_p
-               !! index of the node in the element.
+                  !! index of the node in the element.
                   T(1, index) = (Nv_p + 1)*(index_col - 1) + index_row
                   T(2, index) = T(1, index) + Nv_p + 1
                   T(3, index) = T(2, index) + 1
@@ -154,11 +154,11 @@ contains
 
                end do
             end do
-         case default
+          case default
             error stop "Error: The mesh type is not supported."
          end select
 
-      case (202)
+       case (202)
          !> For 2D Langrange quadratic FE, M_partition,T_partition are different from M_basis,T_basis.
          !! N_nodes: the number of nodes in the field.
          !! N_elements: the number of elements in the field,
@@ -166,7 +166,7 @@ contains
          !! T: the index of the nodes of the elements.
 
          select case (field_info%mesh_type)
-         case (503)!! 503: triangular mesh information matrix.
+          case (503)!! 503: triangular mesh information matrix.
             N_elements = Nh_p*Nv_p*2 !! 2 triangle elements in each rectangle.
             N_nodes = (Nh_b + 1)*(Nv_b + 1)
             allocate (M(2, N_nodes), T(6, N_elements))
@@ -174,7 +174,7 @@ contains
             !> generate the information matrix M and T.
             do index_col = 1, (Nh_b + 1)
                do index_row = 1, (Nv_b + 1)
-               !! index of the node in the field.
+                  !! index of the node in the field.
                   index = (index_col - 1)*(Nv_b + 1) + index_row
                   M(1, index) = field_info%left + (index_col - 1)*field_info%h_partition/2
                   M(2, index) = field_info%bottom + (index_row - 1)*field_info%v_partition/2
@@ -183,16 +183,16 @@ contains
 
             do index_col = 1, Nh_p
                do index_row = 1, Nv_p
-               !! index of the element in the field.
+                  !! index of the element in the field.
                   index = 2*index_row + 2*(index_col - 1)*Nv_p
-               !! down triangle.
+                  !! down triangle.
                   T(1, index - 1) = 2*(Nv_b + 1)*(index_col - 1) + 2*index_row - 1
                   T(2, index - 1) = T(1, index - 1) + 2*(Nv_b + 1)
                   T(3, index - 1) = T(1, index - 1) + 2
                   T(4, index - 1) = T(1, index - 1) + Nv_b + 1
                   T(5, index - 1) = T(4, index - 1) + 1
                   T(6, index - 1) = T(1, index - 1) + 1
-               !! up triangle.
+                  !! up triangle.
                   T(1, index) = T(3, index - 1)
                   T(2, index) = T(2, index - 1)
                   T(3, index) = T(2, index) + 2
@@ -202,7 +202,7 @@ contains
                end do
             end do
 
-         case (504)!! 504: quadrilateral mesh information matrix.
+          case (504)!! 504: quadrilateral mesh information matrix.
             N_elements = Nh_p*Nv_p
             N_nodes = (Nh_b + 1)*(Nv_b + 1)
             allocate (M(2, N_nodes), T(9, N_elements))
@@ -210,7 +210,7 @@ contains
             !> generate the information matrix M and T.
             do index_col = 1, (Nh_b + 1)
                do index_row = 1, (Nv_b + 1)
-               !! index of the node in the field.
+                  !! index of the node in the field.
                   index = (index_col - 1)*(Nv_b + 1) + index_row
                   M(1, index) = field_info%left + (index_col - 1)*field_info%h_partition/2
                   M(2, index) = field_info%bottom + (index_row - 1)*field_info%v_partition/2
@@ -219,9 +219,9 @@ contains
 
             do index_col = 1, Nh_p
                do index_row = 1, Nv_p
-               !! index of the element in the field.
+                  !! index of the element in the field.
                   index = index_row + (index_col - 1)*Nv_p
-               !! rectangle.
+                  !! rectangle.
                   T(1, index) = 2*(Nv_b + 1)*(index_col - 1) + 2*index_row - 1
                   T(2, index) = T(1, index) + 2*(Nv_b + 1)
                   T(3, index) = T(2, index) + 2
@@ -234,7 +234,7 @@ contains
                end do
             end do
 
-         case default
+          case default
             error stop "Error: The mesh type is not supported."
          end select
 

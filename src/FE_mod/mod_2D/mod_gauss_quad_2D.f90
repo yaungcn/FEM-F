@@ -1,5 +1,6 @@
 module mod_gauss_quad_2D
-   use quadrature_module, wp => quadrature_wp
+   use mod_kinds
+   use quadrature_module
    use mod_field_2D, only: field
    use mod_local_basis_func_2D
    implicit none
@@ -40,9 +41,9 @@ module mod_gauss_quad_2D
       private
       real(wp) :: vertices(2, 3)
       type(field), pointer :: field_info
-               !! include basis type, nubmer of local basis, etc.
+      !! include basis type, nubmer of local basis, etc.
       integer :: der_x_trial, der_y_trial, trial_basis_index, &
-                 der_x_test, der_y_test, test_basis_index
+         der_x_test, der_y_test, test_basis_index
       procedure(cofunc_2d), pointer, nopass, public :: cofunc => null()
       procedure(local_basis_func), pointer, nopass, public :: lbfunc => null()
 
@@ -53,10 +54,10 @@ module mod_gauss_quad_2D
 contains
 
    subroutine init_funcs(self, cof_2d, lb_func, &
-                         field_info, vertices, &
-                         der_x_trial, der_y_trial, trial_basis_index, &
-                         der_x_test, der_y_test, test_basis_index)
-                  !! initialize the function to be integrated with input information.
+      field_info, vertices, &
+      der_x_trial, der_y_trial, trial_basis_index, &
+      der_x_test, der_y_test, test_basis_index)
+      !! initialize the function to be integrated with input information.
 
       interface
          pure function local_b_func(x, y, local_vertices, basis_type, basis_index, der_x, der_y) result(func)
@@ -112,17 +113,17 @@ contains
       class(integration_class_2d), intent(inout) :: self
       real(wp), intent(in) :: x, y
       select type (self)
-      class is (func_to_quad_2d)
+       class is (func_to_quad_2d)
          afunc = self%cofunc(x, y)* &
-                 self%lbfunc(x, y, self%vertices, &
-                             self%field_info%trial_basis_type, &
-                             self%trial_basis_index, self%der_x_trial, &
-                             self%der_y_trial)* &
-                 self%lbfunc(x, y, self%vertices, &
-                             self%field_info%test_basis_type, &
-                             self%test_basis_index, self%der_x_test, &
-                             self%der_y_test)
-      class default
+            self%lbfunc(x, y, self%vertices, &
+            self%field_info%trial_basis_type, &
+            self%trial_basis_index, self%der_x_trial, &
+            self%der_y_trial)* &
+            self%lbfunc(x, y, self%vertices, &
+            self%field_info%test_basis_type, &
+            self%test_basis_index, self%der_x_test, &
+            self%der_y_test)
+       class default
          error stop "Undefined Class"
       end select
    end function afunc
@@ -132,13 +133,13 @@ contains
       class(integration_class_2d), intent(inout) :: self
       real(wp), intent(in) :: x, y
       select type (self)
-      class is (func_to_quad_2d)
+       class is (func_to_quad_2d)
          bfunc = self%cofunc(x, y)* &
-                 self%lbfunc(x, y, self%vertices, &
-                             self%field_info%test_basis_type, &
-                             self%test_basis_index, self%der_x_test, &
-                             self%der_y_test)
-      class default
+            self%lbfunc(x, y, self%vertices, &
+            self%field_info%test_basis_type, &
+            self%test_basis_index, self%der_x_test, &
+            self%der_y_test)
+       class default
          error stop "Undefined Class"
       end select
    end function bfunc

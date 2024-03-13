@@ -1,6 +1,6 @@
 module general_square_matrix_mod
    use square_matrix_mod
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    implicit none
    private
 
