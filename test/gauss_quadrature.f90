@@ -4,8 +4,8 @@
 !  Integrates various functions and prints results.
 
 program main
-
-   use quadrature_module, wp => quadrature_wp
+   use mod_kinds
+   use quadrature_module
 
    implicit none
 
@@ -84,7 +84,7 @@ contains
 
       !set up the class
       call doub%initialize(fxy=test_2d_func, xl=xl, xu=xu, yl=yl, &
-                           yu=yu, tolx=tol, toly=tol, methodx=meth, methody=meth)
+         yu=yu, tolx=tol, toly=tol, methodx=meth, methody=meth)
 
       !reset number of function evaluations:
       doub%n_evals = 0
@@ -115,7 +115,7 @@ contains
    !*************************************************************
    function test_2d_func(me, x, y) result(f)
 
-        !! The function is f(x,y)
+      !! The function is f(x,y)
 
       implicit none
 
@@ -125,24 +125,24 @@ contains
       real(wp)              :: f
 
       select type (me)
-      class is (my_doub)
+       class is (my_doub)
 
          select case (me%ifunc)
-         case (1)
+          case (1)
 
             f = x*y
 
-         case (2)
+          case (2)
 
             f = sin(x) + cos(y)
 
-         case default
+          case default
             error stop 'Error in test_2d_func: invalid value of ifunc'
          end select
 
          me%n_evals = me%n_evals + 1
 
-      class default
+       class default
          error stop 'Error in test_2d_func: invalid class.'
       end select
 
@@ -152,7 +152,7 @@ contains
    !*************************************************************
    function test_2d_integral(me, xl, xu, yl, yu) result(f)
 
-        !! The double integral of f(x,y) dx dy = x*y from xl->xu, yl->yu
+      !! The double integral of f(x,y) dx dy = x*y from xl->xu, yl->yu
 
       implicit none
 
@@ -164,22 +164,22 @@ contains
       real(wp)              :: f
 
       select type (me)
-      class is (my_doub)
+       class is (my_doub)
 
          select case (me%ifunc)
-         case (1)
+          case (1)
 
             f = (xu**2/two - xl**2/two)*(yu**2/two - yl**2/two)
 
-         case (2)
+          case (2)
 
             f = (-cos(xu) + cos(xl))*(yu - yl) + (xu - xl)*(sin(yu) - sin(yl))
 
-         case default
+          case default
             error stop 'Error in test_2d_integral: invalid value of ifunc'
          end select
 
-      class default
+       class default
          error stop 'Error in test_2d_integral: invalid class.'
       end select
 

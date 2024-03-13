@@ -1,6 +1,6 @@
 module mod_generate_1D
    use mod_field_1D, only: field
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    implicit none
    private
    public :: generate_info_matrix, generate_boundarynodes

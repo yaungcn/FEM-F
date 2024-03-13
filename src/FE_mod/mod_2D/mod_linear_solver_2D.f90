@@ -1,13 +1,13 @@
 module mod_linear_solver_2D
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    use linear_pack
    implicit none
    private
    public :: solver
 contains
    subroutine solver(A, b, solution)
-      real(wp), intent(in) :: A(:, :), b(:, :)
-      real(wp), intent(inout) :: solution(:, :)
+      real(wp), intent(in) :: A(:, :), b(:)
+      real(wp), intent(inout) :: solution(:)
       type(general_square_matrix) :: linear_solver
       real(wp), dimension(:), allocatable :: b_solver
       real(wp), dimension(:), allocatable :: x_result
@@ -16,10 +16,10 @@ contains
       size_n = size(A, 1)
 
       allocate (b_solver(size_n), x_result(size_n))
-      b_solver(:) = b(:, 1)
+      b_solver(:) = b(:)
       linear_solver = general_square_matrix(A)
       x_result = linear_solver%inv_mat_mult(b_solver)
 
-      solution(:, 1) = x_result(:)
+      solution(:) = x_result(:)
    end subroutine solver
 end module mod_linear_solver_2D

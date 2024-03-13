@@ -1,5 +1,5 @@
 module mod_FE_1D
-
+   use mod_kinds
    use mod_error_1D
    use mod_field_1D
    use mod_co_func_1D
@@ -9,8 +9,6 @@ module mod_FE_1D
    use mod_basis_func_1D
    use mod_treat_boundary_1D
    use mod_linear_solver_1D
-   use quadrature_module, wp => quadrature_wp
-
 contains
 
    subroutine fe_solver(solution, field_info)

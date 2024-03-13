@@ -1,6 +1,5 @@
 program example_FE_1D
-   use linear_pack, only: general_square_matrix
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds, only: wp
    use mod_FE_1D
 
    implicit none

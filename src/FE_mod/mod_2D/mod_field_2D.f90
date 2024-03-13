@@ -1,5 +1,5 @@
 module mod_field_2D
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    use mod_message, only: info_print, warn_print, error_print
    use M_attr, only: attr
    implicit none

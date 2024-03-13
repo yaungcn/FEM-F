@@ -1,6 +1,5 @@
 program example_FE_2D
-   use linear_pack, only: general_square_matrix
-   use quadrature_module, only: wp => quadrature_wp
+   use mod_kinds
    use mod_FE_2D
 
    implicit none
@@ -25,11 +24,6 @@ program example_FE_2D
 
    real(wp), allocatable :: M(:, :)
    integer, allocatable :: T(:, :)
-
-   real(wp), allocatable :: solution(:, :)
-
-   integer :: N_basis
-   real(wp) :: h_basis, max_FE_error
 
    integer :: index
 

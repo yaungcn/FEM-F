@@ -1,5 +1,6 @@
 module mod_FE_2D
-
+   use mod_kinds
+   use mod_sparse
    use mod_message
    use mod_error_2D
    use mod_field_2D
@@ -10,12 +11,11 @@ module mod_FE_2D
    use mod_local_basis_func_2D
    use mod_treat_boundary_2D
    use mod_linear_solver_2D
-   use quadrature_module, wp => quadrature_wp
-
+   implicit none
 contains
 
    subroutine fe_solver(solution, field_info)
-      real(wp), dimension(:, :), allocatable :: solution
+      real(wp), dimension(:), allocatable :: solution
       !> Parameter in FE solver
       type(field), intent(in) :: field_info
 
@@ -39,11 +39,8 @@ contains
 
       integer, allocatable :: boundarynodes(:, :)
 
-      real(wp), allocatable :: A(:, :), b(:, :)
+      real(wp), allocatable :: A(:, :), b(:)
       ! real(wp), allocatable :: solution(:, :)
-
-      integer :: trial_basis_type = 101, trial_derivate_degree = 1
-      integer :: test_basis_type = 101, test_derivate_degree = 1, b_test_derivate_degree = 0
 
       call generate_info_matrix(M=M_partition, T=T_partition, field_info=field_info)
       !! Mesh information for partition and FE basis functions.
@@ -52,7 +49,7 @@ contains
       num_of_elements = N_partition
 
       select case (field_info%trial_basis_type)
-      case (101)
+       case (101)
          N_basis = N_partition
 
          M_basis = M_partition
@@ -60,14 +57,16 @@ contains
 
          num_of_trial_local_basis = 2
          num_of_test_local_basis = 2
-      case (102)
+       case (102)
          continue
-      case default
+       case default
          continue
       end select
 
       !> Allocate memory to A, b and solution. Set to zero.
-      allocate (A(N_basis + 1, N_basis + 1), b(N_basis + 1, 1), solution(N_basis + 1, 1))
+      allocate (A(N_basis + 1, N_basis + 1), &
+         b(N_basis + 1), &
+         solution(N_basis + 1))
       A = 0
       b = 0
       solution = 0
